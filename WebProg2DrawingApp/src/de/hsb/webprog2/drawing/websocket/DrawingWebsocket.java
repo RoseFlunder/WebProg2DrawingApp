@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -12,7 +13,11 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/websocket/drawing")
+import de.hsb.webprog2.drawing.model.Message;
+import de.hsb.webprog2.drawing.websocket.decoder.MessageDecoder;
+import de.hsb.webprog2.drawing.websocket.encoder.MessageEncoder;
+
+@ServerEndpoint(value = "/websocket/drawing", encoders = {MessageEncoder.class}, decoders = {MessageDecoder.class})
 public class DrawingWebsocket {
 
 	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<>());
@@ -28,11 +33,18 @@ public class DrawingWebsocket {
 	}
 	
 	@OnMessage
-	public void onMessage(Session session, String message){
-		try {
-			session.getBasicRemote().sendText("danke, beste");
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void onMessage(Session session, Message msg) {
+		System.out.println(msg.getUser());
+		System.out.println(msg.getType());
+		synchronized (clients) {
+			for (Session client : clients){
+				try {
+					client.getBasicRemote().sendObject(msg);
+				} catch (IOException | EncodeException e) {
+					System.err.println("could not send message");
+				}
+			}
 		}
 	}
+	
 }

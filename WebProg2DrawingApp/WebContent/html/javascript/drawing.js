@@ -38,5 +38,13 @@ var name = "Client" + parseInt(Math.random() * 1000);
         };
        
         function send() {
-            webSocket.send("Energia");
+        	var msg = {
+        		user: "demo",
+        		type : "CHATMESSAGE",
+        	
+        		content : {
+        			message : "beste"
+        		}
+        	};
+            webSocket.send(JSON.stringify(msg));
         };
