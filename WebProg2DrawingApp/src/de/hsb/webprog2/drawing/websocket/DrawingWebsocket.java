@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Resource;
 import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -12,6 +13,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import javax.xml.ws.WebServiceContext;
 
 import de.hsb.webprog2.drawing.model.Message;
 import de.hsb.webprog2.drawing.websocket.decoder.MessageDecoder;
@@ -22,8 +24,12 @@ public class DrawingWebsocket {
 
 	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<>());
 	
+	@Resource
+	private WebServiceContext context;
+	
 	@OnOpen
 	public void open(Session session, EndpointConfig config) {
+		System.out.println(context);
 		clients.add(session);
 	}
 	
@@ -34,8 +40,6 @@ public class DrawingWebsocket {
 	
 	@OnMessage
 	public void onMessage(Session session, Message msg) {
-		System.out.println(msg.getUser());
-		System.out.println(msg.getType());
 		synchronized (clients) {
 			for (Session client : clients){
 				try {
