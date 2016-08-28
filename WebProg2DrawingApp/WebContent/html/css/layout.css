@@ -3,6 +3,14 @@ div.container {
     border: 1px solid gray;
 }
 
+header, footer {
+	padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
 topArea {
 	padding: 1em;
     color: white;
@@ -11,21 +19,49 @@ topArea {
     text-align: center;
 }
 
-toolArea {
-	float: left;
-    max-width: 160px;
+#middleArea {
+	min-height: 800px;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	display: flex;
+	flex-flow: row;
+}
+
+#middleArea > div.toolArea {
     margin: 0;
     padding: 1em;
+	flex: 1 6 20%;
+	order: 1;
 }
 
-chatArea{
-	
+#middleArea > div.historyArea {
+	    margin: 0;
+	    border-left: 1px solid gray;
+	    padding: 1em;
+        flex: 1 6 20%;
+        order: 3;
+    }
+
+#middleArea > div.midArea {
+    	border-left: 1px solid gray;
+   		overflow: hidden;
+        flex: 3 1 60%;
+        order: 2;
+    }
+
+div.drawArea {
+	float: top;
+	height: 600px;
+	padding: 1em;
+	width: 100%;
+    border-bottom: 1px solid gray;
+    overflow: hidden;
 }
 
-historyArea {
-	
-}
-
-drawArea {
-	
+div.chatArea {
+	float: bottom;
+	height: 200px;
+	width: 100%;
+    overflow: scroll;
 }
