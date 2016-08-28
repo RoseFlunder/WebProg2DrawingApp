@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="./css/layout.css">
 <script type="text/javascript" src="./javascript/drawing.js"></script>
 <meta charset="ISO-8859-1">
 <title>TITLE</title>
 </head>
 <body>
-	<div>
-        <input type="submit" value="Send" onclick="send()" />
+	<div class="container">
+	
+		<topArea>
+			<p>Beste</p>
+		</topArea>
+		
+		
+		<toolArea>
+			<p>ok</p>
+		</toolArea>
+		<div>
+			<input type="submit" value="Send" onclick="send()" />
+		</div>
+        <div id="messages"></div>
     </div>
-    <div id="messages"></div>
+    
 </body>
 </html>

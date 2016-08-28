@@ -1,0 +1,31 @@
+div.container {
+    width: 100%;
+    border: 1px solid gray;
+}
+
+topArea {
+	padding: 1em;
+    color: white;
+    background-color: black;
+    clear: left;
+    text-align: center;
+}
+
+toolArea {
+	float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+
+chatArea{
+	
+}
+
+historyArea {
+	
+}
+
+drawArea {
+	
+}
