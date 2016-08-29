@@ -4,7 +4,7 @@ public enum DrawType {
 	
 	LINE,
 	RECTANGLE,
-	OVAL,
+	CIRCLE,
 	POLYGON;
 
 }

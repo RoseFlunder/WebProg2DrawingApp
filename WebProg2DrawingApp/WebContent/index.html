@@ -8,30 +8,36 @@
 </head>
 <body onload="init()">
 	<div class="container">
-	
+
 		<header>
 			<p>Jo Jo</p>
 		</header>
-		
+
 		<div id="middleArea">
 			<div class="toolArea">
-				<p>tools Jo</p>
+				<button id="lineTool" onclick="selectTool('LINE')">
+					<img src="./images/line.png" alt="Linie">
+				</button>
+				<button id="circleTool" onclick="selectTool('CIRCLE')">
+					<img src="./images/oval.png" alt="Oval">
+				</button>
 			</div>
-			
+
 			<div class="midArea">
-				<canvas class="drawArea" id="canvas"></canvas>
+				<canvas class="drawArea" id="canvas" width="800" height="600"></canvas>
 				<div class="chatArea">
 					<div>
 						<input type="submit" value="Send" onclick="send()" />
 					</div>
-		        	<div id="messages"></div>
+					<div id="messages"></div>
 				</div>
 			</div>
-			
+
 			<div class="historyArea">
-				<p>history Jo</p>
+				<p>History</p>
+				<div id="history"></div>
 			</div>
 		</div>
-    </div>
+	</div>
 </body>
 </html>

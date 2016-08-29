@@ -1,4 +1,4 @@
-var webSocket, tools, tool, canvas, ctx;
+var webSocket, tools, tool, canvas, ctx, history;
 
 function init() {
 	webSocket = new WebSocket(
@@ -15,12 +15,15 @@ function init() {
 	canvas.addEventListener('mousedown', ev_canvas, false);
 	canvas.addEventListener('mousemove', ev_canvas, false);
 	canvas.addEventListener('mouseup', ev_canvas, false);
-	
+
 	tools = {
-		LINE : new toolLine()
+		LINE : new lineTool(),
+		CIRCLE : new circleTool()
 	};
-	
+
 	tool = tools["LINE"];
+
+	history = document.getElementById("history");
 }
 
 function onOpen(event) {
@@ -46,6 +49,10 @@ function onMessage(event) {
 		break;
 	case "DRAWMESSAGE":
 		console.log("received draw message");
+		var textnode = document.createTextNode(event.data); 
+		document.getElementById('history').appendChild(textnode);
+		var linebreak = document.createElement("BR");
+		document.getElementById('history').appendChild(linebreak);
 		tools[msg.content.type].draw(msg.content);
 		break;
 
@@ -54,10 +61,11 @@ function onMessage(event) {
 	}
 };
 
-// The general-purpose event handler. This function just determines
-// the mouse position relative to the <canvas> element
+function selectTool(name) {
+	tool = tools[name];
+}
+
 function ev_canvas(ev) {
-	console.log(ev);
 	// Firefox
 	if (ev.layerX || ev.layerX == 0) {
 		ev._x = ev.layerX;
@@ -71,7 +79,7 @@ function ev_canvas(ev) {
 	}
 }
 
-function toolLine() {
+function lineTool() {
 	var tool = this;
 	var started = false;
 
@@ -129,6 +137,56 @@ function toolLine() {
 		ctx.beginPath();
 		ctx.moveTo(content.x1, content.y1);
 		ctx.lineTo(content.x2, content.y2);
+		ctx.closePath();
+		ctx.stroke();
+	}
+}
+
+function circleTool() {
+	var tool = this;
+	var started = false;
+
+	var x1, x2, y1, y2;
+
+	this.mousedown = function(ev) {
+		ctx.beginPath();
+		ctx.moveTo(ev._x, ev._y);
+		x1 = ev._x;
+		y1 = ev._y;
+		tool.started = true;
+	};
+
+	this.mouseup = function(ev) {
+		if (tool.started) {
+			tool.started = false;
+			x2 = ev._x;
+			y2 = ev._y;
+
+			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
+					+ Math.pow(Math.abs(y2 - y1), 2)));
+
+			var msg = {
+				user : "demo",
+				type : "DRAWMESSAGE",
+
+				content : {
+					type : "CIRCLE",
+					content : {
+						x : x1,
+						y : y1,
+						radius : radius
+					}
+				}
+			};
+			console.log(msg);
+			webSocket.send(JSON.stringify(msg));
+		}
+	};
+
+	this.draw = function(drawMessage) {
+		content = drawMessage.content;
+		ctx.beginPath();
+		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
 		ctx.closePath();
 		ctx.stroke();
 	}
