@@ -17,4 +17,7 @@
 		<servlet-name>JAX-RS Servlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+	<listener>
+		<listener-class>de.hsb.webprog2.drawing.service.DrawingAppServletContextListener</listener-class>
+	</listener>
 </web-app>

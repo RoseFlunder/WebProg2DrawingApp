@@ -6,7 +6,7 @@
 <meta charset="ISO-8859-1">
 <title>TITLE</title>
 </head>
-<body>
+<body onload="init()">
 	<div class="container">
 	
 		<header>
@@ -19,9 +19,7 @@
 			</div>
 			
 			<div class="midArea">
-				<div class="drawArea">
-					<p>drawing and drawing and drawing</p>
-				</div>
+				<canvas class="drawArea" id="canvas"></canvas>
 				<div class="chatArea">
 					<div>
 						<input type="submit" value="Send" onclick="send()" />
