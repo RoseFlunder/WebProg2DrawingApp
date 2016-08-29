@@ -3,19 +3,18 @@ package de.hsb.webprog2.drawing.websocket;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
-import org.codehaus.jackson.map.ObjectMapper;
-
 import de.hsb.webprog2.drawing.model.Message;
-import de.hsb.webprog2.drawing.model.draw.DrawMessage;
 import de.hsb.webprog2.drawing.service.DrawingService;
 
 /**
@@ -28,12 +27,18 @@ public class DrawingWebsocket {
 	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<>());
 	private DrawingService drawingService;
 
-	private ObjectMapper mapper = new ObjectMapper();
-
 	@OnOpen
 	public void open(Session session, EndpointConfig config) {
 		drawingService = (DrawingService) config.getUserProperties().get(DrawingService.class.getName());
 		clients.add(session);
+
+		for (Message message : drawingService.getHistory()) {
+			try {
+				session.getBasicRemote().sendObject(message);
+			} catch (IOException | EncodeException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@OnClose
@@ -45,26 +50,28 @@ public class DrawingWebsocket {
 	public void onMessage(Session session, Message msg) {
 		switch (msg.getType()) {
 		case DRAWMESSAGE:
-			try {
-				DrawMessage drawMessage = mapper.readValue(msg.getContent(), DrawMessage.class);
-				drawingService.addDrawingMessageToHistory(drawMessage);
-				break;
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			drawingService.addDrawingMessageToHistory(msg);
+			break;
 
 		default:
 			break;
 		}
 
 		synchronized (clients) {
-			for (Session client : clients) {
+			for (Iterator<Session> iterator = clients.iterator(); iterator.hasNext();) {
+				Session client = iterator.next();
 				try {
-					client.getBasicRemote().sendObject(msg);
+					if (client.isOpen())
+						client.getBasicRemote().sendObject(msg);
 				} catch (IOException | EncodeException e) {
-					System.err.println("could not send message");
+					iterator.remove();
 				}
 			}
 		}
+	}
+
+	@OnError
+	public void error(Session session, Throwable t) {
+		clients.remove(session);
 	}
 }

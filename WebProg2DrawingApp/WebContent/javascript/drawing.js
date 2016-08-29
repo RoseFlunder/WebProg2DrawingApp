@@ -23,7 +23,7 @@ function init() {
 	previewCanvas.id = 'previewCanvas';
 	previewCanvas.width = canvas.width;
 	previewCanvas.height = canvas.height;
-	container.appendChild(previewCanvas);
+	container.appendChild(previewCanvas, canvas);
 
 	previewCtx = previewCanvas.getContext('2d');
 
