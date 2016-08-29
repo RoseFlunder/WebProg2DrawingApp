@@ -49,6 +49,16 @@ canvas.drawArea {
 	overflow: hidden;
 }
 
+#canvasArea {
+	position: relative;
+}
+
+#previewCanvas {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
 div.chatArea {
 	height: 20%;
 	width: 100%;
