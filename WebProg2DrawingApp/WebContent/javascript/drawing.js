@@ -228,13 +228,18 @@ function circleTool() {
 }
 
 function send() {
+	var textBox = document.getElementById("usermsg");
+	
+	
 	var msg = {
 		user : "demo",
 		type : "CHATMESSAGE",
 
 		content : {
-			message : "beste"
+			message : textBox.value
 		}
 	};
+	textBox.value = "";
+	
 	webSocket.send(JSON.stringify(msg));
 };

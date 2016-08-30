@@ -1,5 +1,8 @@
 div.container {
 	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	max-height: 900px;
 	border: 1px solid gray;
 }
 
@@ -12,7 +15,8 @@ header, footer {
 }
 
 #middleArea {
-	min-height: 800px;
+	height: 800px;
+	max-height: 800px;
 	width: 100%;
 	margin: 0px;
 	padding: 0px;
@@ -21,35 +25,33 @@ header, footer {
 }
 
 #middleArea>div.toolArea {
-	margin: 0;
+	margin: 0px;
 	padding: 1em;
-	flex: 1 6 20%;
+	flex: 1 15%;
 	order: 1;
 }
 
 #middleArea>div.historyArea {
-	margin: 0;
-	border-left: 1px solid gray;
-	padding: 1em;
-	flex: 1 6 20%;
+	margin: 0px;
+	padding: 2px;
+	flex: 1 15%;
+	overflow: auto;
 	order: 3;
+	border-left: 1px solid gray;
 }
 
 #middleArea>div.midArea {
+	margin: 0px;
+	padding: 0px;
 	border-left: 1px solid gray;
 	overflow: hidden;
-	/*flex: 3 1 60%;*/
+	flex: none;
 	order: 2;
 }
 
-canvas.drawArea {
-	height: 80%;
-	width: 100%;
-	border-bottom: 1px solid gray;
-	overflow: hidden;
-}
-
 #canvasArea {
+	heigth: 600px;
+	width: 800px;
 	position: relative;
 }
 
@@ -59,8 +61,29 @@ canvas.drawArea {
 	left: 0px;
 }
 
+div.chatMessages {
+	overflow: auto;
+	height: 84%;
+	width: 800px;
+	border-bottom: 1px solid gray;
+}
+
+#usermsg{
+	width: 670px;
+}
+
+#usermsgbtn{
+	width: 120px;
+}
+
+div.textAndButton{
+	display: inline-block;
+	width: 800px;
+	heigth: 16%;
+}
+
 div.chatArea {
-	height: 20%;
+	border-top: 1px solid gray;
+	height: 200px;
 	width: 100%;
-	overflow: scroll;
 }

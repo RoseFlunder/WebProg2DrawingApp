@@ -8,11 +8,9 @@
 </head>
 <body onload="init()">
 	<div class="container">
-
 		<header>
 			<p>Jo Jo</p>
 		</header>
-
 		<div id="middleArea">
 			<div class="toolArea">
 				<button id="lineTool" onclick="selectTool('LINE')">
@@ -29,10 +27,13 @@
 				</div>
 				
 				<div class="chatArea">
-					<div>
-						<input type="submit" value="Send" onclick="send()" />
+					<div class="chatMessages">
+						<div id="messages"></div>
 					</div>
-					<div id="messages"></div>
+					<div class="textAndButton">
+						<input type="text" id="usermsg" />
+						<input  id="usermsgbtn" class="chatButton" type="submit" value="Send" onclick="send()" />
+					</div>
 				</div>
 			</div>
 
