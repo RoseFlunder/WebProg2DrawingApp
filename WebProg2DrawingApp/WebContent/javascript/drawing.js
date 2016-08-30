@@ -1,4 +1,4 @@
-var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, history;
+var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory = new Map();
 
 function init() {
 	webSocket = new WebSocket(
@@ -37,8 +37,6 @@ function init() {
 	};
 
 	tool = tools["LINE"];
-
-	history = document.getElementById("history");
 }
 
 function onOpen(event) {
@@ -64,17 +62,62 @@ function onMessage(event) {
 		break;
 	case "DRAWMESSAGE":
 		console.log("received draw message");
+		drawHistory.set(msg.id, msg);
+		
 		var textnode = document.createTextNode(event.data);
 		document.getElementById('history').appendChild(textnode);
 		var linebreak = document.createElement("BR");
 		document.getElementById('history').appendChild(linebreak);
 		tools[msg.content.type].draw(msg.content);
 		break;
+		
+	case "DELETEMESSAGE":
+		console.log("received delete message");
+		console.log(msg);
+		// remove ids to delete from history object
+		for (let id of msg.content.messageIdsToDelete) {
+			console.log(id);
+			drawHistory.delete(id);
+		}
+		
+		// remove ids from history table in DOM
+		
+		// refresh canvas
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		for (var [key, value] of drawHistory) {
+			tools[value.content.type].draw(value.content);
+		}
+		
+		break;
 
 	default:
 		break;
 	}
 };
+
+// just random delete to test
+function sendDeleteMessage(){
+	var idsToDelete = [];
+	console.log(drawHistory);
+	for (var [key, value] of drawHistory) {
+		console.log("key: " + key);
+		if (Math.random() > 0.6)
+			idsToDelete.push(key);
+	}
+	
+	var msg = {
+		user : "demo",
+		type : "DELETEMESSAGE",
+		content : {
+			messageIdsToDelete : idsToDelete
+		}
+	}
+	
+	console.log("Sending delete message:");
+	console.log(idsToDelete);
+	
+	webSocket.send(JSON.stringify(msg));
+}
 
 function selectTool(name) {
 	tool = tools[name];
@@ -124,8 +167,9 @@ function lineTool() {
 	// This is called when you release the mouse button.
 	this.mouseup = function(ev) {
 		if (tool.started) {
-			tool.mousemove(ev);
 			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
 
 			x2 = ev._x;
 			y2 = ev._y;
