@@ -6,6 +6,25 @@ div.container {
 	border: 1px solid gray;
 }
 
+button {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#lineTool {
+    background-image: url( '../images/line.png' );
+    background-size: 59px 36px;
+    height: 40px;  
+    width: 63px;
+}
+
+#circleTool {
+    background-image: url( '../images/oval.png' );
+    background-size: 59px 36px;
+    height: 40px;  
+    width: 63px;
+}
+
 header, footer {
 	padding: 1em;
 	color: white;
