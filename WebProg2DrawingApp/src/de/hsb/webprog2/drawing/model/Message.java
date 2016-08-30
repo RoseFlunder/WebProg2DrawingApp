@@ -6,6 +6,7 @@ import org.codehaus.jackson.JsonNode;
 
 @XmlRootElement
 public class Message {
+	private String id;
 	private String user;
 	private MessageType type;
 	
@@ -36,5 +37,13 @@ public class Message {
 
 	public void setContent(JsonNode content) {
 		this.content = content;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

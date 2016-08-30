@@ -4,20 +4,10 @@ import org.codehaus.jackson.JsonNode;
 
 public class DrawMessage {
 	
-	private String id;
 	private DrawType type;
-	
 	private JsonNode content;
 	
 	public DrawMessage() {
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public DrawType getType() {
