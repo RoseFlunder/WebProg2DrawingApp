@@ -243,3 +243,13 @@ function send() {
 	
 	webSocket.send(JSON.stringify(msg));
 };
+
+function onKeyPressed(ev) {
+	var e = ev || event;
+	if(e.keyCode == 13) {
+		send();
+	}
+	document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+};
+
+
