@@ -30,5 +30,4 @@ public class MessageEncoder implements javax.websocket.Encoder.Text<Message> {
 			throw new EncodeException(msg, e.getMessage(), e);
 		}
 	}
-
 }

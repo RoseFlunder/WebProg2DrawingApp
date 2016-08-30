@@ -14,6 +14,9 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 
+import org.codehaus.jackson.map.ObjectMapper;
+
+import de.hsb.webprog2.drawing.model.DeleteMessage;
 import de.hsb.webprog2.drawing.model.Message;
 import de.hsb.webprog2.drawing.service.DrawingService;
 
@@ -26,6 +29,7 @@ public class DrawingWebsocket {
 
 	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<>());
 	private DrawingService drawingService;
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@OnOpen
 	public void open(Session session, EndpointConfig config) {
@@ -51,6 +55,15 @@ public class DrawingWebsocket {
 		switch (msg.getType()) {
 		case DRAWMESSAGE:
 			drawingService.addDrawingMessageToHistory(msg);
+			break;
+		case DELETEMESSAGE:
+			try {
+				DeleteMessage deleteMsg = mapper.readValue(msg.getContent(), DeleteMessage.class);
+				drawingService.removeDrawingMessagesFromHistory(deleteMsg.getMessageIdsToDelete());
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
 			break;
 
 		default:

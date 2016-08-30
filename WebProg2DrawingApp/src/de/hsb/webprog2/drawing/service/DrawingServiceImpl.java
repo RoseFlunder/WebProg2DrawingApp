@@ -1,7 +1,9 @@
 package de.hsb.webprog2.drawing.service;
 
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -20,6 +22,17 @@ public class DrawingServiceImpl implements DrawingService {
 	@Override
 	public Deque<Message> getHistory() {
 		return new LinkedList<>(history);
+	}
+
+	@Override
+	public void removeDrawingMessagesFromHistory(Set<String> ids) {
+		synchronized (history) {
+			for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
+				Message message = iterator.next();
+				if (ids.contains(message.getId()))
+					iterator.remove();
+			}
+		}
 	}
 
 }
