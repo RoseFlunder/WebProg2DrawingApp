@@ -2,7 +2,6 @@ div.container {
 	width: 100%;
 	margin: 0px;
 	padding: 0px;
-	max-height: 900px;
 	border: 1px solid gray;
 }
 
@@ -88,11 +87,15 @@ div.chatMessages {
 }
 
 #usermsg{
-	width: 670px;
+	width: 570px;
+}
+
+#username{
+	width: 100px;
 }
 
 #usermsgbtn{
-	width: 120px;
+	width: 100px;
 }
 
 div.textAndButton{

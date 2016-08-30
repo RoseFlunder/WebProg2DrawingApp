@@ -229,10 +229,10 @@ function circleTool() {
 
 function send() {
 	var textBox = document.getElementById("usermsg");
-	
+	var nameBox = document.getElementById("username");
 	
 	var msg = {
-		user : "demo",
+		user : nameBox.value,
 		type : "CHATMESSAGE",
 
 		content : {
