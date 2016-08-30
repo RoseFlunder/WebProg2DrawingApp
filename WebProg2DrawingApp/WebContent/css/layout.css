@@ -45,7 +45,7 @@ header, footer {
 #middleArea>div.toolArea {
 	margin: 0px;
 	padding: 1em;
-	flex: 1 15%;
+	width: 65px;
 	order: 1;
 }
 
