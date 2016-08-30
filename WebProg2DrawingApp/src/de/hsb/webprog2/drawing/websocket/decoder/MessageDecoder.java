@@ -1,6 +1,7 @@
 package de.hsb.webprog2.drawing.websocket.decoder;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.websocket.DecodeException;
 import javax.websocket.EndpointConfig;
@@ -8,6 +9,7 @@ import javax.websocket.EndpointConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import de.hsb.webprog2.drawing.model.ChatMessage;
+import de.hsb.webprog2.drawing.model.DeleteMessage;
 import de.hsb.webprog2.drawing.model.Message;
 
 public class MessageDecoder implements javax.websocket.Decoder.Text<Message>{
@@ -44,8 +46,8 @@ public class MessageDecoder implements javax.websocket.Decoder.Text<Message>{
 		decoder.init(null);
 		
 		String json = "{\"user\": \"testuser\","
-				+ " \"type\": \"CHATMESSAGE\","
-				+ " \"content\": {\"message\" : \"hello world\"}}";
+				+ " \"type\": \"DELETEMESSAGE\","
+				+ " \"content\": {\"messageIdsToDelete\" : [\"hello world\", \"test\"]}}";
 		Message msg = decoder.decode(json);
 		System.out.println(msg.getType());
 		System.out.println(msg.getUser());
@@ -53,8 +55,11 @@ public class MessageDecoder implements javax.websocket.Decoder.Text<Message>{
 		
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			ChatMessage chatMsg = mapper.readValue(msg.getContent(), ChatMessage.class);
-			System.out.println(chatMsg.getMessage());
+			DeleteMessage chatMsg = mapper.readValue(msg.getContent(), DeleteMessage.class);
+			Set<String> messageIdsToDelete = chatMsg.getMessageIdsToDelete();
+			for (String string : messageIdsToDelete) {
+				System.out.println(string);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
