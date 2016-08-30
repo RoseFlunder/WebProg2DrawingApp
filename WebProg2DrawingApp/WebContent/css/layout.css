@@ -80,10 +80,7 @@ header, footer {
 }
 
 div.chatMessages {
-	overflow: auto;
-	height: 84%;
-	width: 800px;
-	border-bottom: 1px solid gray;
+	
 }
 
 #usermsg{
@@ -96,6 +93,13 @@ div.chatMessages {
 
 #usermsgbtn{
 	width: 100px;
+}
+
+#messages{
+	height: 84%;
+	width: 800px;
+	border-bottom: 1px solid gray;
+	overflow-y: scroll;
 }
 
 div.textAndButton{

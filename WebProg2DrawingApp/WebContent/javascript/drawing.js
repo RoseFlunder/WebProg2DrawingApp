@@ -59,6 +59,8 @@ function onMessage(event) {
 		console.log("received chat message");
 		document.getElementById('messages').innerHTML += '<br />' + msg.user
 				+ ": " + msg.content.message;
+		var chatDiv = document.getElementById('messages');
+		chatDiv.scrollTop = chatDiv.scrollHeight;
 		break;
 	case "DRAWMESSAGE":
 		console.log("received draw message");
@@ -238,6 +240,8 @@ function circleTool() {
 	this.mouseup = function(ev) {
 		if (tool.started) {
 			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
 			x2 = ev._x;
 			y2 = ev._y;
 
@@ -295,5 +299,3 @@ function onKeyPressed(ev) {
 	}
 	document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
 };
-
-
