@@ -141,30 +141,49 @@ function clickOnDiv(element){
 }
 
 // just random delete to test
-function sendDeleteMessage(){
+function deleteRandom(){
 	var idsToDelete = [];
 	console.log(drawHistory);
 	for (var [key, value] of drawHistory) {
-		if (Math.random() > 0.6){
-			console.log("random wants to delete " + key);
+		if (Math.random() > 0.5){
 			idsToDelete.push(key);
-		} else {
-			console.log("this id can stay "+ key);
 		}
 	}
 	
+	sendDeleteMessage(idsToDelete);
+}
+
+
+function deleteSelected(){
+	var idsToDelete = [];
+	var historyNode = document.getElementById("history");
+	if (historyNode.hasChildNodes()) {
+		var nodeList = historyNode.childNodes;
+
+		for(var i = 0; i < nodeList.length; i++) {
+			var historyEntry = nodeList[i];
+			if (historyEntry.getAttribute("class") == "activeDiv"){
+				idsToDelete.push(historyEntry.getAttribute("id"));
+			}
+		}
+	}
+	
+	sendDeleteMessage(idsToDelete);
+}
+
+function sendDeleteMessage(idsToDelete){
 	var msg = {
-		user : "demo",
-		type : "DELETEMESSAGE",
-		content : {
-			messageIdsToDelete : idsToDelete
+			user : "demo",
+			type : "DELETEMESSAGE",
+			content : {
+				messageIdsToDelete : idsToDelete
+			}
 		}
-	}
-	
-	console.log("Sending delete message:");
-	console.log(idsToDelete);
-	
-	webSocket.send(JSON.stringify(msg));
+		
+		console.log("Sending delete message:");
+		console.log(idsToDelete);
+		
+		webSocket.send(JSON.stringify(msg));
 }
 
 function selectTool(name) {
