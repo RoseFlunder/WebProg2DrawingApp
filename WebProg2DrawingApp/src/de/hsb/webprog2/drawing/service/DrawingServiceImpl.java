@@ -4,7 +4,6 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import de.hsb.webprog2.drawing.model.Message;
@@ -15,7 +14,6 @@ public class DrawingServiceImpl implements DrawingService {
 	
 	@Override
 	public void addDrawingMessageToHistory(Message msg) {
-		msg.setId(UUID.randomUUID().toString());
 		history.addLast(msg);
 	}
 

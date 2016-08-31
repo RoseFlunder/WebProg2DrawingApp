@@ -58,7 +58,7 @@ function onMessage(event) {
 	switch (msg.type) {
 	case "CHATMESSAGE":
 		console.log("received chat message");
-		document.getElementById('messages').innerHTML += '<br />' + msg.user
+		document.getElementById('messages').innerHTML += '<br />' + msg.user + ' (' + convertMillisToFormattedTime(msg.timestamp) + ')'
 				+ ": " + msg.content.message;
 		var chatDiv = document.getElementById('messages');
 		chatDiv.scrollTop = chatDiv.scrollHeight;
@@ -69,16 +69,17 @@ function onMessage(event) {
 		
 		var msgType = msg.content;
 		var msgContent = msgType.content;
-		var spanText = "";
+		
+		var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + msgType.type;
 		var divnode = document.createElement("div");
 		divnode.setAttribute("onclick", "clickOnDiv(this)");
 		divnode.setAttribute("class", "deActiveDiv");
 		switch(msgType.type){
 			case "CIRCLE":
-				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
+				spanText += " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
 			break;
 			case "LINE":
-				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
+				spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
 			break;
 			case "RECTANGLE":
 				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
@@ -91,8 +92,6 @@ function onMessage(event) {
 		var textnode = document.createTextNode(spanText);
 		divnode.appendChild(textnode);
 		document.getElementById('history').appendChild(divnode);
-		var linebreak = document.createElement("BR");
-		document.getElementById('history').appendChild(linebreak);
 		tools[msg.content.type].draw(msg.content);
 		break;
 		
@@ -119,6 +118,16 @@ function onMessage(event) {
 		break;
 	}
 };
+
+function convertMillisToFormattedTimestamp(millis){
+	var d = new Date(millis);
+	return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+}
+
+function convertMillisToFormattedTime(millis){
+	var d = new Date(millis);
+	return d.toLocaleTimeString();
+}
 
 function clickOnDiv(element){
 	if(element.getAttribute("class") == "deActiveDiv"){
