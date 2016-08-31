@@ -119,7 +119,7 @@ public class DrawRobot extends Thread {
 				
 			case POLYGON:
 				DrawPolygonMessage polyMsg = new DrawPolygonMessage();
-				int points = random.nextInt(10);
+				int points = 3 + random.nextInt(7);
 				int[] xpoints = new int[points];
 				int[] ypoints = new int[points];
 				for (int i = 0; i < points; i++) {
