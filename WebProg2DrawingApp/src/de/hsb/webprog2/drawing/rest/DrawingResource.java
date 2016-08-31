@@ -25,8 +25,9 @@ import de.hsb.webprog2.drawing.model.Message;
 import de.hsb.webprog2.drawing.model.draw.DrawCircleMessage;
 import de.hsb.webprog2.drawing.model.draw.DrawLineMessage;
 import de.hsb.webprog2.drawing.model.draw.DrawMessage;
+import de.hsb.webprog2.drawing.model.draw.DrawPolygonMessage;
+import de.hsb.webprog2.drawing.model.draw.DrawRectangleMessage;
 import de.hsb.webprog2.drawing.service.DrawingService;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Singleton
 @Path("/drawing")
@@ -75,10 +76,11 @@ public class DrawingResource {
 							circleMsg.getRadius() * 2);
 					break;
 				case RECTANGLE:
-					throw new NotImplementedException();
+					DrawRectangleMessage rectMsg = mapper.readValue(drawMsg.getContent(), DrawRectangleMessage.class);
+					graphics.drawRect(rectMsg.getX(), rectMsg.getY(), rectMsg.getWidth(), rectMsg.getHeight());
 				case POLYGON:
-					throw new NotImplementedException();
-
+					DrawPolygonMessage polyMsg = mapper.readValue(drawMsg.getContent(), DrawPolygonMessage.class);
+					graphics.drawPolygon(polyMsg.getxPoints(), polyMsg.getyPoints(), polyMsg.getxPoints().length);
 				default:
 					break;
 				}
