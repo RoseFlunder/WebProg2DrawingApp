@@ -10,6 +10,22 @@ button {
     vertical-align: top;
 }
 
+div.activeDiv{
+	width: 100%;
+	border: 1px solid gray;
+	margin: 0px;
+	padding: 5px;
+	background-color: red;
+}
+
+div.deActiveDiv{
+	width: 100%;
+	border: 1px solid gray;
+	margin: 0px;
+	padding: 5px;
+	background-color: white;
+}
+
 #lineTool {
     background-image: url( '../images/line.png' );
     background-size: 59px 36px;

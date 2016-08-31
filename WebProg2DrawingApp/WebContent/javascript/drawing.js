@@ -66,8 +66,30 @@ function onMessage(event) {
 		console.log("received draw message");
 		drawHistory.set(msg.id, msg);
 		
-		var textnode = document.createTextNode(event.data);
-		document.getElementById('history').appendChild(textnode);
+		var msgType = msg.content;
+		var msgContent = msgType.content;
+		var spanText = "";
+		var divnode = document.createElement("div");
+		divnode.setAttribute("onclick", "clickOnDiv(this)");
+		divnode.setAttribute("class", "deActiveDiv");
+		switch(msgType.type){
+			case "CIRCLE":
+				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
+			break;
+			case "LINE":
+				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
+			break;
+			case "RECTANGLE":
+				
+			break;
+			case "POLYGON":
+				
+			break;
+		}
+
+		var textnode = document.createTextNode(spanText);
+		divnode.appendChild(textnode);
+		document.getElementById('history').appendChild(divnode);
 		var linebreak = document.createElement("BR");
 		document.getElementById('history').appendChild(linebreak);
 		tools[msg.content.type].draw(msg.content);
@@ -96,6 +118,15 @@ function onMessage(event) {
 		break;
 	}
 };
+
+function clickOnDiv(element){
+	if(element.getAttribute("class") == "deActiveDiv"){
+		element.setAttribute("class", "activeDiv");
+	}
+	else{
+		element.setAttribute("class", "deActiveDiv");
+	}
+}
 
 // just random delete to test
 function sendDeleteMessage(){
