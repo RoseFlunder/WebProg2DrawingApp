@@ -106,8 +106,6 @@ function onMessage(event) {
 			document.getElementById("history").removeChild(document.getElementById(id));
 		}
 		
-		// remove ids from history table in DOM
-		
 		// refresh canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		for (var [key, value] of drawHistory) {
