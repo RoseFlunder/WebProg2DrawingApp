@@ -83,7 +83,7 @@ function onMessage(event) {
 				spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
 			break;
 			case "RECTANGLE":
-				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
+				spanText += " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
 			break;
 			case "POLYGON":
 				
