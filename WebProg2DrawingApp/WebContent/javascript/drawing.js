@@ -31,11 +31,17 @@ function init() {
 	previewCanvas.addEventListener('mousedown', ev_canvas, false);
 	previewCanvas.addEventListener('mousemove', ev_canvas, false);
 	previewCanvas.addEventListener('mouseup', ev_canvas, false);
+	
+	previewCanvas.tabIndex = 1000;
+	
+	document.addEventListener('onkeydown', ev_canvas, false);
+	document.addEventListener('onkeyup', ev_canvas, false);
 
 	tools = {
 		LINE : new lineTool(),
 		CIRCLE : new circleTool(),
-		RECTANGLE : new rectangleTool()
+		RECTANGLE : new rectangleTool(),
+		POLYGON : new polygonTool()
 	};
 
 	tool = tools["LINE"];
@@ -449,6 +455,94 @@ function circleTool() {
 	}
 }
 
+function polygonTool() {
+	var tool = this;
+	var started = false;
+	var keypressed = false;
+	var index = 0;
+
+	var x, y;
+	var x2, y2;
+
+	this.mousedown = function(ev) {
+		if(tool.keypressed){
+			ctx.beginPath();
+			ctx.moveTo(ev._x, ev._y);
+			x[index++] = ev._x;
+			y[index++] = ev._y;
+			tool.started = true;
+		}
+	};
+	
+	this.mousemove = function(ev) {
+		if (tool.started) {
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			x2 = ev._x;
+			y2 = ev._y;
+			
+			previewCtx.beginPath();
+			previewCtx.moveTo(x[0], y[0]);
+			
+			if(x.length > 1){
+				for(var i = 1; i < x.length; ++i){
+					previewCtx.lineTo(x[i], y[i]);
+				}
+			}
+			
+			previewCtx.lineTo(x2, y2);
+			previewCtx.lineTo(x[0], y[0]);
+			previewCtx.closePath();
+			previewCtx.stroke();
+		}
+	};
+
+	this.mouseup = function(ev) {
+		if (tool.started && !tool.keypressed) {
+			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			x[index] = ev._x;
+			y[index] = ev._y;
+
+			var msg = {
+				user : "demo",
+				type : "DRAWMESSAGE",
+
+				content : {
+					type : "POLYGON",
+					content : {
+						xPoints : x,
+						yPoints : y
+					}
+				}
+			};
+			
+			console.log(msg);
+			webSocket.send(JSON.stringify(msg));
+			x = [];
+			y = [];
+			index = 0;
+		}
+	};
+
+	this.draw = function(drawMessage) {
+		content = drawMessage.content;
+		
+		previewCtx.beginPath();
+		previewCtx.moveTo(content.xPoints[0], content.yPoints[0]);
+		if(content.xPoints.length > 1){
+			for(var i = 1; i < content.xPoints.length; ++i){
+				previewCtx.lineTo(content.xPoints[i], content.yPoints[i]);
+			}
+		}
+		previewCtx.lineTo(content.xPoints[0], content.yPoints[0]);
+		previewCtx.closePath();
+		previewCtx.stroke();
+	}
+}
+
 function send() {
 	var textBox = document.getElementById("usermsg");
 	var nameBox = document.getElementById("username");
@@ -473,3 +567,15 @@ function onKeyPressed(ev) {
 	}
 	document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
 };
+
+document.onkeydown = function(ev){
+	if(ev.shiftKey){
+		tools['POLYGON'].keypressed = true;
+	}
+}
+
+document.onkeyup = function(ev){
+	if(!ev.shiftKey){
+		tools['POLYGON'].keypressed = false;
+	}
+}
