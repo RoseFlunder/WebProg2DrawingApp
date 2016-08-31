@@ -143,9 +143,12 @@ function sendDeleteMessage(){
 	var idsToDelete = [];
 	console.log(drawHistory);
 	for (var [key, value] of drawHistory) {
-		console.log("key: " + key);
-		if (Math.random() > 0.6)
+		if (Math.random() > 0.6){
+			console.log("random wants to delete " + key);
 			idsToDelete.push(key);
+		} else {
+			console.log("this id can stay "+ key);
+		}
 	}
 	
 	var msg = {
