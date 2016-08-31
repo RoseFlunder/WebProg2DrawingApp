@@ -1,4 +1,5 @@
 var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory = new Map();
+var selectedHistoryElement;
 
 function init() {
 	webSocket = new WebSocket(
@@ -129,13 +130,16 @@ function convertMillisToFormattedTime(millis){
 	return d.toLocaleTimeString();
 }
 
+function animateSelected(){
+	
+}
+
 function clickOnDiv(element){
-	if(element.getAttribute("class") == "deActiveDiv"){
-		element.setAttribute("class", "activeDiv");
-	}
-	else{
-		element.setAttribute("class", "deActiveDiv");
-	}
+	if (selectedHistoryElement)
+		selectedHistoryElement.setAttribute("class", "deActiveDiv");
+	
+	element.setAttribute("class", "activeDiv");
+	selectedHistoryElement = element;
 }
 
 // just random delete to test
@@ -153,19 +157,7 @@ function deleteRandom(){
 
 
 function deleteSelected(){
-	var idsToDelete = [];
-	var historyNode = document.getElementById("history");
-	if (historyNode.hasChildNodes()) {
-		var nodeList = historyNode.childNodes;
-
-		for(var i = 0; i < nodeList.length; i++) {
-			var historyEntry = nodeList[i];
-			if (historyEntry.getAttribute("class") == "activeDiv"){
-				idsToDelete.push(historyEntry.getAttribute("id"));
-			}
-		}
-	}
-	
+	var idsToDelete = [selectedHistoryElement.getAttribute("id")];	
 	sendDeleteMessage(idsToDelete);
 }
 
