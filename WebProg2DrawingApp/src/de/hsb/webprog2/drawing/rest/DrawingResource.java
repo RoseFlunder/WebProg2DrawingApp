@@ -78,9 +78,11 @@ public class DrawingResource {
 				case RECTANGLE:
 					DrawRectangleMessage rectMsg = mapper.readValue(drawMsg.getContent(), DrawRectangleMessage.class);
 					graphics.drawRect(rectMsg.getX(), rectMsg.getY(), rectMsg.getWidth(), rectMsg.getHeight());
+					break;
 				case POLYGON:
 					DrawPolygonMessage polyMsg = mapper.readValue(drawMsg.getContent(), DrawPolygonMessage.class);
 					graphics.drawPolygon(polyMsg.getxPoints(), polyMsg.getyPoints(), polyMsg.getxPoints().length);
+					break;
 				default:
 					break;
 				}
