@@ -1,5 +1,7 @@
 package de.hsb.webprog2.drawing.model;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.JsonNode;
@@ -9,6 +11,7 @@ public class Message {
 	private String id;
 	private String user;
 	private MessageType type;
+	private Date timestamp;
 	
 	private JsonNode content;
 	
@@ -45,5 +48,13 @@ public class Message {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 }

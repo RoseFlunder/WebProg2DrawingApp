@@ -1,5 +1,6 @@
 package de.hsb.webprog2.drawing.service;
 
+import java.util.Date;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,7 +16,10 @@ public class DrawingServiceImpl implements DrawingService {
 	
 	@Override
 	public void addDrawingMessageToHistory(Message msg) {
-		msg.setId(UUID.randomUUID().toString());
+		if (msg.getId() == null)
+			msg.setId(UUID.randomUUID().toString());
+		if (msg.getTimestamp() == null)
+			msg.setTimestamp(new Date());
 		history.addLast(msg);
 	}
 

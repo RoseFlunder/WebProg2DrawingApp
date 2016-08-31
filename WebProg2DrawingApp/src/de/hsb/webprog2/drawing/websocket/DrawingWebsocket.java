@@ -85,7 +85,9 @@ public class DrawingWebsocket {
 	public void onMessage(Session session, Message msg) {
 		switch (msg.getType()) {
 		case DRAWMESSAGE:
-			drawingService.addDrawingMessageToHistory(msg);
+			//only add new messages, if its a message that already has an ID its an animation message
+			if (msg.getId() == null)
+				drawingService.addDrawingMessageToHistory(msg);
 			break;
 		case DELETEMESSAGE:
 			try {
