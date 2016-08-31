@@ -74,6 +74,7 @@ function onMessage(event) {
 		var divnode = document.createElement("div");
 		divnode.setAttribute("onclick", "clickOnDiv(this)");
 		divnode.setAttribute("class", "deActiveDiv");
+		divnode.setAttribute("id", msg.id);
 		switch(msgType.type){
 			case "CIRCLE":
 				spanText += " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
@@ -102,6 +103,7 @@ function onMessage(event) {
 		for (var id of msg.content.messageIdsToDelete) {
 			console.log(id);
 			drawHistory.delete(id);
+			document.getElementById("history").removeChild(document.getElementById(id));
 		}
 		
 		// remove ids from history table in DOM
