@@ -40,6 +40,13 @@ div.deActiveDiv{
     width: 63px;
 }
 
+#rectangleTool {
+    background-image: url( '../images/' );
+    background-size: 59px 36px;
+    height: 40px;  
+    width: 63px;
+}
+
 header, footer {
 	padding: 1em;
 	color: white;

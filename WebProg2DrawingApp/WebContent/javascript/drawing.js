@@ -33,7 +33,8 @@ function init() {
 
 	tools = {
 		LINE : new lineTool(),
-		CIRCLE : new circleTool()
+		CIRCLE : new circleTool(),
+		RECTANGLE : new rectangleTool()
 	};
 
 	tool = tools["LINE"];
@@ -81,7 +82,7 @@ function onMessage(event) {
 				spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
 			break;
 			case "RECTANGLE":
-				
+				spanText = msg.user + " | " + msgType.type + " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
 			break;
 			case "POLYGON":
 				
@@ -243,6 +244,77 @@ function lineTool() {
 		ctx.beginPath();
 		ctx.moveTo(content.x1, content.y1);
 		ctx.lineTo(content.x2, content.y2);
+		ctx.closePath();
+		ctx.stroke();
+	}
+}
+
+function rectangleTool() {
+	var tool = this;
+	var started = false;
+
+	var x1, x2, y1, y2, width, height;
+
+	this.mousedown = function(ev) {
+		ctx.beginPath();
+		ctx.moveTo(ev._x, ev._y);
+		x1 = ev._x;
+		y1 = ev._y;
+		tool.started = true;
+	};
+	
+	this.mousemove = function(ev) {
+		if (tool.started) {
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			x2 = ev._x;
+			y2 = ev._y;
+			
+			width = x2 - x1;
+			height = y2 - y1;
+			
+			previewCtx.beginPath();
+			previewCtx.rect(x1, y1, width, height);
+			previewCtx.closePath();
+			previewCtx.stroke();
+		}
+	};
+
+	this.mouseup = function(ev) {
+		if (tool.started) {
+			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			x2 = ev._x;
+			y2 = ev._y;
+			
+			width = x2 - x1;
+			height = y2 - y1;
+
+			var msg = {
+				user : "demo",
+				type : "DRAWMESSAGE",
+
+				content : {
+					type : "RECTANGLE",
+					content : {
+						x : x1,
+						y : y1,
+						width : width,
+						height : height
+					}
+				}
+			};
+			console.log(msg);
+			webSocket.send(JSON.stringify(msg));
+		}
+	};
+
+	this.draw = function(drawMessage) {
+		content = drawMessage.content;
+		ctx.beginPath();
+		ctx.rect(content.x, content.y, content.width, content.height);
 		ctx.closePath();
 		ctx.stroke();
 	}
