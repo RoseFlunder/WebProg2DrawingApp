@@ -8,6 +8,7 @@ import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -62,13 +63,24 @@ public class DrawRobot extends Thread {
         //do nothing
     }
 	
+	@OnError
+	public void onError(Session session, Throwable t){
+		System.out.println("Error at robot");
+		try {
+			if (session.isOpen())
+				session.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void sendMessage(String message) {
         this.session.getAsyncRemote().sendText(message);
     }
 
 	@Override
 	public void run() {
-		while (!isInterrupted()){
+		while (!isInterrupted() && session.isOpen()){
 			System.out.println(this.getName() + " sending draw message");
 			Message msg = new Message();
 			msg.setUser("Robot");

@@ -57,7 +57,7 @@ function onMessage(event) {
 	switch (msg.type) {
 	case "CHATMESSAGE":
 		console.log("received chat message");
-		document.getElementById('messages').innerHTML += '<br />' + msg.user
+		document.getElementById('messages').innerHTML += '<br />' + msg.user + ' (' + convertMillisToFormattedTime(msg.timestamp) + ')'
 				+ ": " + msg.content.message;
 		var chatDiv = document.getElementById('messages');
 		chatDiv.scrollTop = chatDiv.scrollHeight;
@@ -69,7 +69,7 @@ function onMessage(event) {
 		var msgType = msg.content;
 		var msgContent = msgType.content;
 		
-		var spanText = msg.user + " | " + convertMillisToFormattedDate(msg.timestamp) + " | " + msgType.type;
+		var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + msgType.type;
 		var divnode = document.createElement("div");
 		divnode.setAttribute("onclick", "clickOnDiv(this)");
 		divnode.setAttribute("class", "deActiveDiv");
@@ -118,9 +118,14 @@ function onMessage(event) {
 	}
 };
 
-function convertMillisToFormattedDate(millis){
+function convertMillisToFormattedTimestamp(millis){
 	var d = new Date(millis);
 	return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+}
+
+function convertMillisToFormattedTime(millis){
+	var d = new Date(millis);
+	return d.toLocaleTimeString();
 }
 
 function clickOnDiv(element){

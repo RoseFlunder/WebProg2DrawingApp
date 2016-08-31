@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.websocket.EncodeException;
 import javax.websocket.EndpointConfig;
@@ -83,6 +85,10 @@ public class DrawingWebsocket {
 
 	@OnMessage
 	public void onMessage(Session session, Message msg) {
+		msg.setTimestamp(new Date());
+		if (msg.getId() == null)
+			msg.setId(UUID.randomUUID().toString());
+		
 		switch (msg.getType()) {
 		case DRAWMESSAGE:
 			//only add new messages, if its a message that already has an ID its an animation message
