@@ -5,6 +5,7 @@ import org.codehaus.jackson.JsonNode;
 public class DrawMessage {
 	
 	private DrawType type;
+	private boolean animate;
 	private JsonNode content;
 	
 	public DrawMessage() {
@@ -24,5 +25,13 @@ public class DrawMessage {
 
 	public void setContent(JsonNode content) {
 		this.content = content;
+	}
+
+	public boolean isAnimate() {
+		return animate;
+	}
+
+	public void setAnimate(boolean animate) {
+		this.animate = animate;
 	}
 }

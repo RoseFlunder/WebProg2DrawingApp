@@ -66,35 +66,47 @@ function onMessage(event) {
 		break;
 	case "DRAWMESSAGE":
 		console.log("received draw message");
-		drawHistory.set(msg.id, msg);
-		
-		var msgType = msg.content;
-		var msgContent = msgType.content;
-		
-		var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + msgType.type;
-		var divnode = document.createElement("div");
-		divnode.setAttribute("onclick", "clickOnDiv(this)");
-		divnode.setAttribute("class", "deActiveDiv");
-		divnode.setAttribute("id", msg.id);
-		switch(msgType.type){
-			case "CIRCLE":
-				spanText += " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
-			break;
-			case "LINE":
-				spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
-			break;
-			case "RECTANGLE":
-				spanText += " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
-			break;
-			case "POLYGON":
-				
-			break;
-		}
+		console.log(msg);
+		if (!drawHistory.has(msg.id)){
+			drawHistory.set(msg.id, msg);
+			
+			var msgType = msg.content;
+			var msgContent = msgType.content;
+			
+			var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + msgType.type;
+			var divnode = document.createElement("div");
+			divnode.setAttribute("onclick", "clickOnDiv(this)");
+			divnode.setAttribute("class", "deActiveDiv");
+			divnode.setAttribute("id", msg.id);
+			switch(msgType.type){
+				case "CIRCLE":
+					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
+				break;
+				case "LINE":
+					spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
+				break;
+				case "RECTANGLE":
+					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
+				break;
+				case "POLYGON":
+					
+				break;
+			}
 
-		var textnode = document.createTextNode(spanText);
-		divnode.appendChild(textnode);
-		document.getElementById('history').appendChild(divnode);
-		tools[msg.content.type].draw(msg.content);
+			var textnode = document.createTextNode(spanText);
+			divnode.appendChild(textnode);
+			document.getElementById('history').appendChild(divnode);
+			tools[msg.content.type].draw(msg.content);
+		} else {
+			// TODO: incoming animation start or stop message
+			console.log("Animation message");
+			console.log(msg);
+			
+			if (msg.content.animate){
+				new animator(msg).animate();
+			}
+		}
+		
 		break;
 		
 	case "DELETEMESSAGE":
@@ -108,10 +120,7 @@ function onMessage(event) {
 		}
 		
 		// refresh canvas
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		for (var [key, value] of drawHistory) {
-			tools[value.content.type].draw(value.content);
-		}
+		redrawHistoryOnCanvas();
 		
 		break;
 
@@ -119,6 +128,25 @@ function onMessage(event) {
 		break;
 	}
 };
+
+function redrawHistoryOnCanvas(){
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	for (var [key, value] of drawHistory) {
+		tools[value.content.type].draw(value.content);
+	}
+}
+
+function animator(msgToAnimate){
+	this.msgToAnimate = msgToAnimate;
+	
+	this.animate = function () {
+		if (this.msgToAnimate.content.animate){
+			console.log("redraw");
+			tools[this.msgToAnimate.content.type].draw(this.msgToAnimate.content);
+			window.requestAnimationFrame(this.animate);
+		}
+	}
+}
 
 function convertMillisToFormattedTimestamp(millis){
 	var d = new Date(millis);
@@ -131,7 +159,27 @@ function convertMillisToFormattedTime(millis){
 }
 
 function animateSelected(){
+	// TODO: check if selected is own element
+	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
+	var drawMsg = msg.content;
 	
+	drawMsg.animate = !drawMsg.animate;
+	if (drawMsg.animate){
+		var drawContent = drawMsg;
+		switch (msg.content.type) {
+		case "LINE":
+			drawContent.vx1 = Math.random() * 5;
+			drawContent.vy1 = Math.random() * 5;
+			drawContent.vx2 = Math.random() * 5;
+			drawContent.vy2 = Math.random() * 5;
+			break;
+
+		default:
+			break;
+		}
+	}
+	
+	webSocket.send(JSON.stringify(msg));
 }
 
 function clickOnDiv(element){
