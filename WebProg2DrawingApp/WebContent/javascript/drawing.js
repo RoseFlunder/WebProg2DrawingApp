@@ -387,6 +387,76 @@ function circleTool() {
 	}
 }
 
+function polygonTool() {
+	var tool = this;
+	var started = false;
+
+	var x1, x2, y1, y2;
+
+	this.mousedown = function(ev) {
+		ctx.beginPath();
+		ctx.moveTo(ev._x, ev._y);
+		x1 = ev._x;
+		y1 = ev._y;
+		tool.started = true;
+	};
+	
+	this.mousemove = function(ev) {
+		if (tool.started) {
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			x2 = ev._x;
+			y2 = ev._y;
+
+			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
+					+ Math.pow(Math.abs(y2 - y1), 2)));
+
+			previewCtx.beginPath();
+			previewCtx.arc(x1, y1, radius, 0, Math.PI * 2);
+			previewCtx.closePath();
+			previewCtx.stroke();
+		}
+	};
+
+	this.mouseup = function(ev) {
+		if (tool.started) {
+			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			x2 = ev._x;
+			y2 = ev._y;
+
+			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
+					+ Math.pow(Math.abs(y2 - y1), 2)));
+
+			var msg = {
+				user : "demo",
+				type : "DRAWMESSAGE",
+
+				content : {
+					type : "CIRCLE",
+					content : {
+						x : x1,
+						y : y1,
+						radius : radius
+					}
+				}
+			};
+			console.log(msg);
+			webSocket.send(JSON.stringify(msg));
+		}
+	};
+
+	this.draw = function(drawMessage) {
+		content = drawMessage.content;
+		ctx.beginPath();
+		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
+		ctx.closePath();
+		ctx.stroke();
+	}
+}
+
 function send() {
 	var textBox = document.getElementById("usermsg");
 	var nameBox = document.getElementById("username");
