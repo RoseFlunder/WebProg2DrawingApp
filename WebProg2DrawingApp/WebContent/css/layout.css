@@ -27,6 +27,7 @@ button {
 header, footer {
 	padding: 1em;
 	color: white;
+	height: 40px;
 	background-color: black;
 	clear: left;
 	text-align: center;
@@ -77,10 +78,6 @@ header, footer {
 	position: absolute;
 	top: 0px;
 	left: 0px;
-}
-
-div.chatMessages {
-	
 }
 
 #usermsg{

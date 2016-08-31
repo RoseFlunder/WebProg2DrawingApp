@@ -77,7 +77,7 @@ function onMessage(event) {
 		console.log("received delete message");
 		console.log(msg);
 		// remove ids to delete from history object
-		for (let id of msg.content.messageIdsToDelete) {
+		for (var id of msg.content.messageIdsToDelete) {
 			console.log(id);
 			drawHistory.delete(id);
 		}
