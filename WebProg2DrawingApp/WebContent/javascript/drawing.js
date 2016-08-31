@@ -393,16 +393,31 @@ function circleTool() {
 function polygonTool() {
 	var tool = this;
 	var started = false;
+	var keypressed = false;
+	var index = 0;
 
-	var x1, x2, y1, y2;
+	var x, y;
+	var x2, y2;
 
 	this.mousedown = function(ev) {
 		ctx.beginPath();
 		ctx.moveTo(ev._x, ev._y);
-		x1 = ev._x;
-		y1 = ev._y;
+		x[index++] = ev._x;
+		y[index++] = ev._y;
 		tool.started = true;
 	};
+	
+	this.keydown = function(ev){
+		if(ev.shiftKey){
+			tool.keypressed = true;
+		}
+	}
+	
+	this.keyup = function(ev){
+		if(!ev.shiftKey){
+			tool.keypressed = false;
+		}
+	}
 	
 	this.mousemove = function(ev) {
 		if (tool.started) {
@@ -411,41 +426,45 @@ function polygonTool() {
 			
 			x2 = ev._x;
 			y2 = ev._y;
-
-			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
-					+ Math.pow(Math.abs(y2 - y1), 2)));
-
+			
 			previewCtx.beginPath();
-			previewCtx.arc(x1, y1, radius, 0, Math.PI * 2);
+			previewCtx.moveTo(x[0], y[0]);
+			
+			for(var i = 1; i < x.length; ++i){
+				previewCtx.lineTo(x[i], y[i]);
+				previewCtx.moveTo(x[i], y[i]);
+			}
+			
+			previewCtx.lineTo(x2, y2);
 			previewCtx.closePath();
 			previewCtx.stroke();
 		}
 	};
 
 	this.mouseup = function(ev) {
-		if (tool.started) {
+		if (tool.started && !tool.keypressed) {
 			tool.started = false;
 			previewCtx.clearRect(0, 0, previewCanvas.width,
 					previewCanvas.height);
-			x2 = ev._x;
-			y2 = ev._y;
-
-			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
-					+ Math.pow(Math.abs(y2 - y1), 2)));
+			x[index] = ev._x;
+			y[index] = ev._y;
 
 			var msg = {
 				user : "demo",
 				type : "DRAWMESSAGE",
 
 				content : {
-					type : "CIRCLE",
+					type : "POLYGON",
 					content : {
-						x : x1,
-						y : y1,
-						radius : radius
+						xPoints : x,
+						yPoints : y
 					}
 				}
 			};
+			
+			x = [];
+			y = [];
+			index = 0;
 			console.log(msg);
 			webSocket.send(JSON.stringify(msg));
 		}
@@ -453,10 +472,18 @@ function polygonTool() {
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
-		ctx.beginPath();
-		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
-		ctx.closePath();
-		ctx.stroke();
+		
+		previewCtx.beginPath();
+		previewCtx.moveTo(content.x[0], content.y[0]);
+		
+		for(var i = 1; i < x.length; ++i){
+			previewCtx.lineTo(content.x[i], content.y[i]);
+			previewCtx.moveTo(content.x[i], content.y[i]);
+		}
+		
+		previewCtx.lineTo(content.x[0], content.y[0]);
+		previewCtx.closePath();
+		previewCtx.stroke();
 	}
 }
 
