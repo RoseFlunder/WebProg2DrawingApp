@@ -86,14 +86,14 @@ public class DrawingWebsocket {
 	@OnMessage
 	public void onMessage(Session session, Message msg) {
 		msg.setTimestamp(new Date());
-		if (msg.getId() == null)
-			msg.setId(UUID.randomUUID().toString());
 		
 		switch (msg.getType()) {
 		case DRAWMESSAGE:
 			//only add new messages, if its a message that already has an ID its an animation message
-			if (msg.getId() == null)
+			if (msg.getId() == null){
+				msg.setId(UUID.randomUUID().toString());
 				drawingService.addDrawingMessageToHistory(msg);
+			}
 			break;
 		case DELETEMESSAGE:
 			try {
