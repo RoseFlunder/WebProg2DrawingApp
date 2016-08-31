@@ -66,12 +66,12 @@ public class DrawingWebsocket {
 	
 	private void checkRobot(){
 		if (clients.size() < 3 && (robot == null || !robot.isAlive())){
-			try {
-				robot = new DrawRobot(new URI("ws://localhost:8080/WebProg2DrawingApp/websocket/drawing"));
-				robot.start();
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				robot = new DrawRobot(new URI("ws://localhost:8080/WebProg2DrawingApp/websocket/drawing"));
+//				robot.start();
+//			} catch (URISyntaxException e) {
+//				e.printStackTrace();
+//			}
 		} else if (robot != null && robot.isAlive() && (clients.size() > 3 || clients.size() == 1)){
 			robot.interrupt();
 		}

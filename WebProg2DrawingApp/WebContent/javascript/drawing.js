@@ -32,6 +32,25 @@ function init() {
 	previewCanvas.addEventListener('mousemove', ev_canvas, false);
 	previewCanvas.addEventListener('mouseup', ev_canvas, false);
 	
+	window.onkeydown = function(ev){
+		console.log("key down event");
+		console.log(tools['POLYGON'].keypressed);
+		if(ev.ctrlKey && !tools['POLYGON'].keypressed){
+			//console.log("keydown ctrl");
+			tools['POLYGON'].keypressed = true;
+		}
+	}
+
+	window.onkeyup = function(ev){
+		console.log("key up event");
+		console.log(tools['POLYGON'].keypressed);
+		if(ev.keyCode == 17 && tools['POLYGON'].keypressed){
+			//console.log("keyup ctrl");
+			tools['POLYGON'].keypressed = false;
+			tools['POLYGON'].endPolygon();
+		}
+	}
+	
 	previewCanvas.tabIndex = 1000;
 	
 	document.addEventListener('onkeydown', ev_canvas, false);
@@ -458,24 +477,53 @@ function circleTool() {
 function polygonTool() {
 	var tool = this;
 	var started = false;
-	var keypressed = false;
-	var index = 0;
 
-	var x, y;
+	var x = [], y = [];
 	var x2, y2;
+	
+	this.keypressed = false;
 
 	this.mousedown = function(ev) {
 		if(tool.keypressed){
+			console.log("mousedown polygon with key pressed");
 			ctx.beginPath();
 			ctx.moveTo(ev._x, ev._y);
-			x[index++] = ev._x;
-			y[index++] = ev._y;
+			x.push(ev._x);
+			y.push(ev._y);
 			tool.started = true;
 		}
 	};
 	
+	this.endPolygon = function() {
+		if (tool.started) {
+			console.log("tool end");
+			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			var msg = {
+				user : "demo",
+				type : "DRAWMESSAGE",
+
+				content : {
+					type : "POLYGON",
+					content : {
+						xPoints : x,
+						yPoints : y
+					}
+				}
+			};
+			
+			console.log(msg);
+			webSocket.send(JSON.stringify(msg));
+			x = [];
+			y = [];
+		}
+	}
+	
 	this.mousemove = function(ev) {
 		if (tool.started) {
+			console.log("mousemove polygon with key pressed");
 			previewCtx.clearRect(0, 0, previewCanvas.width,
 					previewCanvas.height);
 			
@@ -499,47 +547,21 @@ function polygonTool() {
 	};
 
 	this.mouseup = function(ev) {
-		if (tool.started && !tool.keypressed) {
-			tool.started = false;
-			previewCtx.clearRect(0, 0, previewCanvas.width,
-					previewCanvas.height);
-			x[index] = ev._x;
-			y[index] = ev._y;
-
-			var msg = {
-				user : "demo",
-				type : "DRAWMESSAGE",
-
-				content : {
-					type : "POLYGON",
-					content : {
-						xPoints : x,
-						yPoints : y
-					}
-				}
-			};
-			
-			console.log(msg);
-			webSocket.send(JSON.stringify(msg));
-			x = [];
-			y = [];
-			index = 0;
-		}
 	};
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
 		
-		previewCtx.beginPath();
-		previewCtx.moveTo(content.xPoints[0], content.yPoints[0]);
+		ctx.beginPath();
+		ctx.moveTo(content.xPoints[0], content.yPoints[0]);
 		if(content.xPoints.length > 1){
 			for(var i = 1; i < content.xPoints.length; ++i){
-				previewCtx.lineTo(content.xPoints[i], content.yPoints[i]);
+				ctx.lineTo(content.xPoints[i], content.yPoints[i]);
 			}
 		}
-		previewCtx.lineTo(content.xPoints[0], content.yPoints[0]);
-		previewCtx.closePath();
-		previewCtx.stroke();
+		ctx.lineTo(content.xPoints[0], content.yPoints[0]);
+		ctx.closePath();
+		ctx.stroke();
 	}
 }
 
@@ -568,14 +590,4 @@ function onKeyPressed(ev) {
 	document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
 };
 
-document.onkeydown = function(ev){
-	if(ev.shiftKey){
-		tools['POLYGON'].keypressed = true;
-	}
-}
 
-document.onkeyup = function(ev){
-	if(!ev.shiftKey){
-		tools['POLYGON'].keypressed = false;
-	}
-}
