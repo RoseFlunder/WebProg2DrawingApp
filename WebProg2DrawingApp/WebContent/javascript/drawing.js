@@ -36,7 +36,7 @@ function init() {
 		console.log("key down event");
 		console.log(tools['POLYGON'].keypressed);
 		if(ev.ctrlKey && !tools['POLYGON'].keypressed){
-			//console.log("keydown ctrl");
+			// console.log("keydown ctrl");
 			tools['POLYGON'].keypressed = true;
 		}
 	}
@@ -45,7 +45,7 @@ function init() {
 		console.log("key up event");
 		console.log(tools['POLYGON'].keypressed);
 		if(ev.keyCode == 17 && tools['POLYGON'].keypressed){
-			//console.log("keyup ctrl");
+			// console.log("keyup ctrl");
 			tools['POLYGON'].keypressed = false;
 			tools['POLYGON'].endPolygon();
 		}
@@ -134,11 +134,11 @@ function onMessage(event) {
 		
 		break;
 		
-	case "DELETEMESSAGE":
+	case "DELETE_RESPONSE_MESSAGE":
 		console.log("received delete message");
 		console.log(msg);
-		// remove ids to delete from history object
-		for (var id of msg.content.messageIdsToDelete) {
+		// remove ids to delete from history object		
+		for (var id of msg.content.deletedIds) {
 			console.log(id);
 			drawHistory.delete(id);
 			document.getElementById("history").removeChild(document.getElementById(id));
@@ -215,39 +215,23 @@ function clickOnDiv(element){
 	selectedHistoryElement = element;
 }
 
-// just random delete to test
-function deleteRandom(){
-	var idsToDelete = [];
-	console.log(drawHistory);
-	for (var [key, value] of drawHistory) {
-		if (Math.random() > 0.5){
-			idsToDelete.push(key);
-		}
-	}
+function deleteSelected(mode){
+	var selectedId = selectedHistoryElement.getAttribute("id");	
 	
-	sendDeleteMessage(idsToDelete);
-}
-
-
-function deleteSelected(){
-	var idsToDelete = [selectedHistoryElement.getAttribute("id")];	
-	sendDeleteMessage(idsToDelete);
-}
-
-function sendDeleteMessage(idsToDelete){
 	var msg = {
 		user : "demo",
-		type : "DELETEMESSAGE",
+		type : "DELETE_REQUEST_MESSAGE",
 		content : {
-			messageIdsToDelete : idsToDelete
+			drawMessageId : selectedId,
+			mode : mode
 		}
 	}
-	
+		
 	console.log("Sending delete message:");
-	console.log(idsToDelete);
 	
 	webSocket.send(JSON.stringify(msg));
 }
+
 
 function selectTool(name) {
 	tool = tools[name];

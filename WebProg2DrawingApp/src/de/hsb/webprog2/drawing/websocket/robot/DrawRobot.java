@@ -86,7 +86,6 @@ public class DrawRobot extends Thread {
 	@Override
 	public void run() {
 		while (run && session.isOpen()){
-			System.out.println(this.getName() + " sending draw message");
 			Message msg = new Message();
 			msg.setUser("Robot");
 			msg.setType(MessageType.DRAWMESSAGE);
@@ -149,7 +148,7 @@ public class DrawRobot extends Thread {
 			}
 			
 			try {
-				Thread.sleep(500);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				System.err.println("Interrupted");
 				break;

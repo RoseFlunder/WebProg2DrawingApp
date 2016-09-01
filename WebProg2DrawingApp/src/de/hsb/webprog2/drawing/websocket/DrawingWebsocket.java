@@ -21,8 +21,10 @@ import javax.websocket.Session;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
-import de.hsb.webprog2.drawing.model.DeleteMessage;
+import de.hsb.webprog2.drawing.model.DeleteRequestMessage;
+import de.hsb.webprog2.drawing.model.DeleteResponseMessage;
 import de.hsb.webprog2.drawing.model.Message;
+import de.hsb.webprog2.drawing.model.MessageType;
 import de.hsb.webprog2.drawing.service.DrawingService;
 import de.hsb.webprog2.drawing.websocket.robot.DrawRobot;
 
@@ -99,10 +101,15 @@ public class DrawingWebsocket {
 				drawingService.addDrawingMessageToHistory(msg);
 			}
 			break;
-		case DELETEMESSAGE:
+		case DELETE_REQUEST_MESSAGE:
 			try {
-				DeleteMessage deleteMsg = mapper.readValue(msg.getContent(), DeleteMessage.class);
-				drawingService.removeDrawingMessagesFromHistory(deleteMsg.getMessageIdsToDelete());
+				DeleteRequestMessage deleteMsg = mapper.readValue(msg.getContent(), DeleteRequestMessage.class);
+				Set<String> deletedIds = drawingService.removeFromHistory(deleteMsg.getDrawMessageId(), deleteMsg.getMode());
+				
+				DeleteResponseMessage response = new DeleteResponseMessage();
+				response.setDeletedIds(deletedIds);
+				msg.setType(MessageType.DELETE_RESPONSE_MESSAGE);
+				msg.setContent(mapper.valueToTree(response));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
