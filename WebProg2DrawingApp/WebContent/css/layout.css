@@ -34,21 +34,21 @@ div.deActiveDiv{
 }
 
 #circleTool {
-    background-image: url( '../images/oval.png' );
+    background-image: url( '../images/circle.png' );
     background-size: 59px 36px;
     height: 40px;  
     width: 63px;
 }
 
 #rectangleTool {
-    background-image: url( '../images/' );
+    background-image: url( '../images/rectangle.png' );
     background-size: 59px 36px;
     height: 40px;  
     width: 63px;
 }
 
 #polygonTool {
-    background-image: url( '../images/' );
+    background-image: url( '../images/polygon.png' );
     background-size: 59px 36px;
     height: 40px;  
     width: 63px;

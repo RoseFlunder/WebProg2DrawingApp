@@ -2,9 +2,9 @@ var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory 
 var selectedHistoryElement;
 
 function init() {
-	webSocket = new WebSocket(
-			"ws://localhost:8080/WebProg2DrawingApp/websocket/drawing");
-
+	var uri = "ws://" + window.location.host + "/WebProg2DrawingApp/websocket/drawing";
+	
+	webSocket = new WebSocket(uri);
 	webSocket.onerror = onError;
 	webSocket.onopen = onOpen;
 	webSocket.onmessage = onMessage;
@@ -251,6 +251,7 @@ function sendDeleteMessage(idsToDelete){
 
 function selectTool(name) {
 	tool = tools[name];
+	previewCanvas.focus();
 }
 
 function ev_canvas(ev) {
@@ -446,22 +447,24 @@ function circleTool() {
 
 			var radius = parseInt(Math.sqrt(Math.pow(Math.abs(x2 - x1), 2)
 					+ Math.pow(Math.abs(y2 - y1), 2)));
+			
+			if (radius > 0){
+				var msg = {
+					user : "demo",
+					type : "DRAWMESSAGE",
 
-			var msg = {
-				user : "demo",
-				type : "DRAWMESSAGE",
-
-				content : {
-					type : "CIRCLE",
 					content : {
-						x : x1,
-						y : y1,
-						radius : radius
+						type : "CIRCLE",
+						content : {
+							x : x1,
+							y : y1,
+							radius : radius
+						}
 					}
-				}
-			};
-			console.log(msg);
-			webSocket.send(JSON.stringify(msg));
+				};
+				console.log(msg);
+				webSocket.send(JSON.stringify(msg));
+			}
 		}
 	};
 

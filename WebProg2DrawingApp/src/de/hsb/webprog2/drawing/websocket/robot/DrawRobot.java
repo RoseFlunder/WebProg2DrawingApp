@@ -36,6 +36,7 @@ public class DrawRobot extends Thread {
 	private DrawType[] drawTypes = DrawType.values();
 	private Random random = new Random();
 	private ObjectMapper mapper = new ObjectMapper();
+	private boolean run = true;
 	
 	public DrawRobot(URI endpointURI) {
 		try {
@@ -77,10 +78,14 @@ public class DrawRobot extends Thread {
 	public void sendMessage(String message) {
         this.session.getAsyncRemote().sendText(message);
     }
+	
+	public void stopRobot(){
+		this.run = false;
+	}
 
 	@Override
 	public void run() {
-		while (!isInterrupted() && session.isOpen()){
+		while (run && session.isOpen()){
 			System.out.println(this.getName() + " sending draw message");
 			Message msg = new Message();
 			msg.setUser("Robot");
@@ -144,8 +149,9 @@ public class DrawRobot extends Thread {
 			}
 			
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
+				System.err.println("Interrupted");
 				break;
 			}
 		}
