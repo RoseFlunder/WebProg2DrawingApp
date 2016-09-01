@@ -3,7 +3,7 @@ var selectedHistoryElement;
 
 function init() {
 	webSocket = new WebSocket(
-			"ws://92.77.7.214:8080/WebProg2DrawingApp/websocket/drawing");
+			"ws://localhost:8080/WebProg2DrawingApp/websocket/drawing");
 
 	webSocket.onerror = onError;
 	webSocket.onopen = onOpen;
