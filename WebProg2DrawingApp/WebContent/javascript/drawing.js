@@ -3,7 +3,7 @@ var selectedHistoryElement;
 
 function init() {
 	webSocket = new WebSocket(
-			"ws://localhost:8080/WebProg2DrawingApp/websocket/drawing");
+			"ws://92.77.7.214:8080/WebProg2DrawingApp/websocket/drawing");
 
 	webSocket.onerror = onError;
 	webSocket.onopen = onOpen;
@@ -32,7 +32,7 @@ function init() {
 	previewCanvas.addEventListener('mousemove', ev_canvas, false);
 	previewCanvas.addEventListener('mouseup', ev_canvas, false);
 	
-	window.onkeydown = function(ev){
+	canvasArea.onkeydown = function(ev){
 		console.log("key down event");
 		console.log(tools['POLYGON'].keypressed);
 		if(ev.ctrlKey && !tools['POLYGON'].keypressed){
@@ -41,7 +41,7 @@ function init() {
 		}
 	}
 
-	window.onkeyup = function(ev){
+	canvasArea.onkeyup = function(ev){
 		console.log("key up event");
 		console.log(tools['POLYGON'].keypressed);
 		if(ev.keyCode == 17 && tools['POLYGON'].keypressed){
@@ -236,17 +236,17 @@ function deleteSelected(){
 
 function sendDeleteMessage(idsToDelete){
 	var msg = {
-			user : "demo",
-			type : "DELETEMESSAGE",
-			content : {
-				messageIdsToDelete : idsToDelete
-			}
+		user : "demo",
+		type : "DELETEMESSAGE",
+		content : {
+			messageIdsToDelete : idsToDelete
 		}
-		
-		console.log("Sending delete message:");
-		console.log(idsToDelete);
-		
-		webSocket.send(JSON.stringify(msg));
+	}
+	
+	console.log("Sending delete message:");
+	console.log(idsToDelete);
+	
+	webSocket.send(JSON.stringify(msg));
 }
 
 function selectTool(name) {
