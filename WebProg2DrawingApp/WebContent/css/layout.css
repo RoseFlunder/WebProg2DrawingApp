@@ -26,32 +26,60 @@ div.deActiveDiv{
 	background-color: white;
 }
 
+#animate_selected {
+    background-image: url( '../images/play.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
+#delete_after {
+    background-image: url( '../images/deleteunder.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
+#delete_before {
+    background-image: url( '../images/deleteupper.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
+#delete_single {
+    background-image: url( '../images/delete.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
 #lineTool {
     background-image: url( '../images/line.png' );
-    background-size: 59px 36px;
-    height: 40px;  
-    width: 63px;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
 }
 
 #circleTool {
     background-image: url( '../images/circle.png' );
-    background-size: 59px 36px;
-    height: 40px;  
-    width: 63px;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
 }
 
 #rectangleTool {
     background-image: url( '../images/rectangle.png' );
-    background-size: 59px 36px;
-    height: 40px;  
-    width: 63px;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
 }
 
 #polygonTool {
     background-image: url( '../images/polygon.png' );
-    background-size: 59px 36px;
-    height: 40px;  
-    width: 63px;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
 }
 
 header, footer {

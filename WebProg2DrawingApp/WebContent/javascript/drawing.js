@@ -105,7 +105,7 @@ function onMessage(event) {
 			divnode.setAttribute("id", msg.id);
 			switch(msgType.type){
 				case "CIRCLE":
-					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") r:" + msgContent.radius;
+					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") radius:" + msgContent.radius;
 				break;
 				case "LINE":
 					spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
@@ -114,7 +114,7 @@ function onMessage(event) {
 					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
 				break;
 				case "POLYGON":
-					
+					spanText += " | points: " + msgContent.xPoints.length;
 				break;
 			}
 
