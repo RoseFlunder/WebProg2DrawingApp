@@ -2,7 +2,7 @@ var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory 
 var selectedHistoryElement;
 
 function init() {
-	var uri = "ws://" + window.location.host + "/WebProg2DrawingApp/websocket/drawing";
+	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing";
 	
 	webSocket = new WebSocket(uri);
 	webSocket.onerror = onError;

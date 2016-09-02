@@ -53,7 +53,6 @@ public class DrawingWebsocket {
 				try {
 					session.getBasicRemote().sendObject(message);
 				} catch (IOException | EncodeException e) {
-					System.err.println("shit");
 					System.err.println(e.getMessage());
 				}
 			}
