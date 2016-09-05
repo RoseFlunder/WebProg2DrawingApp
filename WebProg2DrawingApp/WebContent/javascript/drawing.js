@@ -179,12 +179,15 @@ function getUsernameAgain() {
     }
 }
 
+function getRandom(min, max) {
+	  return Math.random() * (max - min) + min;
+	}
+
 function getUsername() {
     var person = prompt("Please enter your name", "User");
+    var nameBox = document.getElementById("username");
     
-    if (person != null) {
-    	var nameBox = document.getElementById("username");
-    	
+    if (person) {
     	var msg = {
     		user : person,
     		type : "REGISTER_USERNAME_MESSAGE",
@@ -192,10 +195,21 @@ function getUsername() {
     			username : person
     		}
     	};
-    
     	nameBox.value = person
-    	
     	webSocket.send(JSON.stringify(msg));
+    }
+    else{
+    	var string = "User";
+    	string += Math.round(getRandom(1,10000)).toString();
+    	var msg = {
+        		user : string,
+        		type : "REGISTER_USERNAME_MESSAGE",
+        		content : {
+        			username : string
+        		}
+        	};
+        nameBox.value = string
+        webSocket.send(JSON.stringify(msg));
     }
 }
 
