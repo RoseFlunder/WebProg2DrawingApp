@@ -64,6 +64,7 @@ function init() {
 	};
 
 	tool = tools["LINE"];
+	getUsername();
 }
 
 function onOpen(event) {
@@ -148,11 +149,55 @@ function onMessage(event) {
 		redrawHistoryOnCanvas();
 		
 		break;
+		
+	case "USERNAME_UNAVAILABLE":
+		getUsernameAgain();
+		break;
 
 	default:
 		break;
 	}
 };
+
+function getUsernameAgain() {
+    var person = prompt("Username already in use! Please enter your name", "User");
+    
+    if (person != null) {
+    	var nameBox = document.getElementById("username");
+    	
+    	var msg = {
+    		user : person,
+    		type : "REGISTER_USERNAME_MESSAGE",
+    		content : {
+    			username : person
+    		}
+    	};
+    
+    	nameBox.value = person
+    	
+    	webSocket.send(JSON.stringify(msg));
+    }
+}
+
+function getUsername() {
+    var person = prompt("Please enter your name", "User");
+    
+    if (person != null) {
+    	var nameBox = document.getElementById("username");
+    	
+    	var msg = {
+    		user : person,
+    		type : "REGISTER_USERNAME_MESSAGE",
+    		content : {
+    			username : person
+    		}
+    	};
+    
+    	nameBox.value = person
+    	
+    	webSocket.send(JSON.stringify(msg));
+    }
+}
 
 function redrawHistoryOnCanvas(){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);

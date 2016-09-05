@@ -6,8 +6,10 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +27,7 @@ import de.hsb.webprog2.drawing.model.DeleteRequestMessage;
 import de.hsb.webprog2.drawing.model.DeleteResponseMessage;
 import de.hsb.webprog2.drawing.model.Message;
 import de.hsb.webprog2.drawing.model.MessageType;
+import de.hsb.webprog2.drawing.model.RegisterUsernameMessage;
 import de.hsb.webprog2.drawing.service.DrawingService;
 import de.hsb.webprog2.drawing.websocket.robot.DrawRobot;
 
@@ -40,12 +43,13 @@ public class DrawingWebsocket {
 	private DrawingService drawingService;
 	private ObjectMapper mapper = new ObjectMapper();
 	private static DrawRobot robot;
+	private static Map<String, String> Users = new HashMap<String,String>();
 
 	@OnOpen
 	public void open(Session session, EndpointConfig config) {
 		System.out.println("Open new session");
 		drawingService = (DrawingService) config.getUserProperties().get(DrawingService.class.getName());
-
+		
 		Deque<Message> history = drawingService.getHistory();
 		for (Message message : history) {
 			System.out.println("sending history message");
@@ -65,6 +69,7 @@ public class DrawingWebsocket {
 	@OnClose
 	public void close(Session session) {
 		System.out.println("Session closed");
+		Users.remove(session.getId());
 		clients.remove(session);
 		checkRobot();
 	}
@@ -114,7 +119,32 @@ public class DrawingWebsocket {
 			}
 
 			break;
-
+		
+		case REGISTER_USERNAME_MESSAGE:{
+			try{
+				RegisterUsernameMessage userMsg = mapper.readValue(msg.getContent(), RegisterUsernameMessage.class);
+				
+				System.out.println(session.getId() + " Register Username Message" + Users.size());
+				
+				if(!Users.containsValue(userMsg.getUsername())){
+					Users.put(session.getId(), userMsg.getUsername());
+				}
+				else{
+					System.out.println("Register Username Message Failed");
+					Message newMsg = new Message();
+					newMsg.setId("Server");
+					newMsg.setUser("Server");
+					newMsg.setType(MessageType.USERNAME_UNAVAILABLE);
+					newMsg.setTimestamp(new Date());
+					session.getBasicRemote().sendObject(newMsg);
+				}
+			}
+			catch (Exception e){
+				e.printStackTrace();
+			} 
+		}
+			
+			
 		default:
 			break;
 		}
