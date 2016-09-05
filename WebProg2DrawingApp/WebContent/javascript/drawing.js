@@ -264,6 +264,32 @@ function ev_canvas(ev) {
 	}
 }
 
+function getColorFromRGBA(color){
+	var alpha = (color >> 24) & 0xFF;
+	var red = (color >> 16) & 0xFF;
+	var green = (color >> 8) & 0xFF;
+	var blue = (color >> 0) & 0xFF;
+	
+	return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
+}
+
+function sendDrawMessage(content){
+	var hex = 'FF' + document.getElementById('lineColorPicker').value.substring(1);
+	var lineColor = parseInt(hex, 16);
+	console.log(lineColor);
+	content.lineColor = lineColor;
+	content.fillColor = 0;
+
+	var msg = {
+		user : document.getElementById("username").value,
+		type : "DRAWMESSAGE",
+
+		content : content
+	};
+	console.log(msg);
+	webSocket.send(JSON.stringify(msg));
+}
+
 function lineTool() {
 	var tool = this;
 	var started = false;
@@ -300,28 +326,24 @@ function lineTool() {
 
 			x2 = ev._x;
 			y2 = ev._y;
-
-			var msg = {
-				user : document.getElementById("username").value,
-				type : "DRAWMESSAGE",
-
+			
+			var content = {
+				type : "LINE",
 				content : {
-					type : "LINE",
-					content : {
-						x1 : x1,
-						y1 : y1,
-						x2 : x2,
-						y2 : y2
-					}
+					x1 : x1,
+					y1 : y1,
+					x2 : x2,
+					y2 : y2
 				}
 			};
-			console.log(msg);
-			webSocket.send(JSON.stringify(msg));
+			
+			sendDrawMessage(content);
 		}
 	};
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
+		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.moveTo(content.x1, content.y1);
 		ctx.lineTo(content.x2, content.y2);
@@ -372,28 +394,24 @@ function rectangleTool() {
 			
 			width = x2 - x1;
 			height = y2 - y1;
-
-			var msg = {
-				user : document.getElementById("username").value,
-				type : "DRAWMESSAGE",
-
+			
+			var content = {
+				type : "RECTANGLE",
 				content : {
-					type : "RECTANGLE",
-					content : {
-						x : x1,
-						y : y1,
-						width : width,
-						height : height
-					}
+					x : x1,
+					y : y1,
+					width : width,
+					height : height
 				}
-			};
-			console.log(msg);
-			webSocket.send(JSON.stringify(msg));
+			}
+			
+			sendDrawMessage(content);
 		}
 	};
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
+		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.rect(content.x, content.y, content.width, content.height);
 		ctx.closePath();
@@ -445,27 +463,23 @@ function circleTool() {
 					+ Math.pow(Math.abs(y2 - y1), 2)));
 			
 			if (radius > 0){
-				var msg = {
-					user : document.getElementById("username").value,
-					type : "DRAWMESSAGE",
-
+				var content = {
+					type : "CIRCLE",
 					content : {
-						type : "CIRCLE",
-						content : {
-							x : x1,
-							y : y1,
-							radius : radius
-						}
+						x : x1,
+						y : y1,
+						radius : radius
 					}
-				};
-				console.log(msg);
-				webSocket.send(JSON.stringify(msg));
+				}
+				
+				sendDrawMessage(content);
 			}
 		}
 	};
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
+		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
 		ctx.closePath();
@@ -500,21 +514,15 @@ function polygonTool() {
 			previewCtx.clearRect(0, 0, previewCanvas.width,
 					previewCanvas.height);
 			
-			var msg = {
-				user : document.getElementById("username").value,
-				type : "DRAWMESSAGE",
-
+			var content = {
+				type : "POLYGON",
 				content : {
-					type : "POLYGON",
-					content : {
-						xPoints : x,
-						yPoints : y
-					}
+					xPoints : x,
+					yPoints : y
 				}
-			};
+			}
+			sendDrawMessage(content);
 			
-			console.log(msg);
-			webSocket.send(JSON.stringify(msg));
 			x = [];
 			y = [];
 		}
@@ -551,6 +559,7 @@ function polygonTool() {
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
 		
+		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.moveTo(content.xPoints[0], content.yPoints[0]);
 		if(content.xPoints.length > 1){

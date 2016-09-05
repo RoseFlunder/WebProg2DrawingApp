@@ -1,5 +1,6 @@
 package de.hsb.webprog2.drawing.websocket.robot;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Random;
@@ -91,6 +92,9 @@ public class DrawRobot extends Thread {
 			msg.setType(MessageType.DRAWMESSAGE);
 			
 			DrawMessage drawMsg = new DrawMessage();
+			drawMsg.setLineColor(Color.BLACK.getRGB());
+			drawMsg.setFillColor(DrawMessage.NONE.getRGB());
+			
 			drawMsg.setType(drawTypes[random.nextInt(drawTypes.length)]);
 			JsonNode drawContent = null;
 			
