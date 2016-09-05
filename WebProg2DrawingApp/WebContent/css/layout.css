@@ -1,5 +1,6 @@
 div.container {
 	width: 100%;
+	min-width: 1000px;
 	margin: 0px;
 	padding: 0px;
 	border: 1px solid gray;
@@ -111,6 +112,7 @@ header, footer {
 #middleArea>div.historyArea {
 	margin: 0px;
 	padding: 2px;
+	min-width: 80px;
 	flex: 1 15%;
 	overflow: auto;
 	order: 3;
