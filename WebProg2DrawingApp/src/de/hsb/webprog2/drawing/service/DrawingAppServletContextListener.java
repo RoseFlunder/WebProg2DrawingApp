@@ -26,7 +26,7 @@ public class DrawingAppServletContextListener implements ServletContextListener 
 		try {
 			ServerContainer container = (ServerContainer) servletContext
 					.getAttribute("javax.websocket.server.ServerContainer");
-			ServerEndpointConfig c = ServerEndpointConfig.Builder.create(DrawingWebsocket.class, "/websocket/drawing")
+			ServerEndpointConfig c = ServerEndpointConfig.Builder.create(DrawingWebsocket.class, "/websocket/drawing/{username}")
 					.decoders(Arrays.asList(MessageDecoder.class)).encoders(Arrays.asList(MessageEncoder.class))
 					.build();
 			c.getUserProperties().put(DrawingService.class.getName(), drawingService);

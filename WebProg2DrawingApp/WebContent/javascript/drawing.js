@@ -2,7 +2,10 @@ var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory 
 var selectedHistoryElement;
 
 function init() {
-	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing";
+	var person = prompt("Please enter your name", "User");
+		
+	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing/" + person;
+	console.log(uri);
 	
 	webSocket = new WebSocket(uri);
 	webSocket.onerror = onError;
@@ -64,7 +67,6 @@ function init() {
 	};
 
 	tool = tools["LINE"];
-	getUsername();
 }
 
 function onOpen(event) {
@@ -150,8 +152,9 @@ function onMessage(event) {
 		
 		break;
 		
-	case "USERNAME_UNAVAILABLE":
-		getUsernameAgain();
+	case "REGISTER_USERNAME_MESSAGE":
+		var nameBox = document.getElementById("username");
+		nameBox.value = msg.user;
 		break;
 
 	default:
@@ -159,58 +162,8 @@ function onMessage(event) {
 	}
 };
 
-function getUsernameAgain() {
-    var person = prompt("Username already in use! Please enter your name", "User");
-    
-    if (person != null) {
-    	var nameBox = document.getElementById("username");
-    	
-    	var msg = {
-    		user : person,
-    		type : "REGISTER_USERNAME_MESSAGE",
-    		content : {
-    			username : person
-    		}
-    	};
-    
-    	nameBox.value = person
-    	
-    	webSocket.send(JSON.stringify(msg));
-    }
-}
-
 function getRandom(min, max) {
 	  return Math.random() * (max - min) + min;
-	}
-
-function getUsername() {
-    var person = prompt("Please enter your name", "User");
-    var nameBox = document.getElementById("username");
-    
-    if (person) {
-    	var msg = {
-    		user : person,
-    		type : "REGISTER_USERNAME_MESSAGE",
-    		content : {
-    			username : person
-    		}
-    	};
-    	nameBox.value = person
-    	webSocket.send(JSON.stringify(msg));
-    }
-    else{
-    	var string = "User";
-    	string += Math.round(getRandom(1,10000)).toString();
-    	var msg = {
-        		user : string,
-        		type : "REGISTER_USERNAME_MESSAGE",
-        		content : {
-        			username : string
-        		}
-        	};
-        nameBox.value = string
-        webSocket.send(JSON.stringify(msg));
-    }
 }
 
 function redrawHistoryOnCanvas(){
@@ -278,7 +231,7 @@ function deleteSelected(mode){
 	var selectedId = selectedHistoryElement.getAttribute("id");	
 	
 	var msg = {
-		user : "demo",
+		user : document.getElementById("username").value,
 		type : "DELETE_REQUEST_MESSAGE",
 		content : {
 			drawMessageId : selectedId,
@@ -349,7 +302,7 @@ function lineTool() {
 			y2 = ev._y;
 
 			var msg = {
-				user : "demo",
+				user : document.getElementById("username").value,
 				type : "DRAWMESSAGE",
 
 				content : {
@@ -421,7 +374,7 @@ function rectangleTool() {
 			height = y2 - y1;
 
 			var msg = {
-				user : "demo",
+				user : document.getElementById("username").value,
 				type : "DRAWMESSAGE",
 
 				content : {
@@ -493,7 +446,7 @@ function circleTool() {
 			
 			if (radius > 0){
 				var msg = {
-					user : "demo",
+					user : document.getElementById("username").value,
 					type : "DRAWMESSAGE",
 
 					content : {
@@ -548,7 +501,7 @@ function polygonTool() {
 					previewCanvas.height);
 			
 			var msg = {
-				user : "demo",
+				user : document.getElementById("username").value,
 				type : "DRAWMESSAGE",
 
 				content : {
