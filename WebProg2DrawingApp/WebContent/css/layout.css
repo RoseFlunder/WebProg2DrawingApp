@@ -27,6 +27,13 @@ div.deActiveDiv{
 	background-color: white;
 }
 
+#lineColorPicker {
+	background-color: white;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
 #animate_selected {
     background-image: url( '../images/play.png' );
     background-size: 60px 40px;
