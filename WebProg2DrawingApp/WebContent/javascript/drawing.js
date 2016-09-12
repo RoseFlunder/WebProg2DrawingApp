@@ -132,14 +132,6 @@ function onMessage(event) {
 			console.log("Animation message");
 			console.log(msg);
 			drawHistory.set(msg.id, msg);
-			
-			if (msg.content.animate){
-				//animate(msg);
-				animator.addElement(msg);
-			} else {
-				animator.removeElement(msg);
-			}
-			
 			redrawHistoryOnCanvas();
 		}
 		
@@ -233,14 +225,14 @@ function animateSelected(){
 	drawMsg.animate = true;
 	tools[drawMsg.type].setAnimationParams(drawMsg);
 	
-	webSocket.send(JSON.stringify(msg));
+	animator.addElement(msg);
 }
 
 function stopAnimateSelected(){
 	// TODO: check if selected is own element
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	msg.content.animate = false;	
-	webSocket.send(JSON.stringify(msg));
+	animator.removeElement(msg);
 }
 
 function clickOnDiv(element){
