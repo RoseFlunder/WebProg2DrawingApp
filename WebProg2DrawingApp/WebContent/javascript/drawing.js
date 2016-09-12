@@ -75,10 +75,11 @@ function onOpen(event) {
 
 function onError(event) {
 	alert(event.data);
+	console.log(event.data);
 };
 
 function onClose(event) {
-	document.getElementById('messages').innerHTML = 'Connection closed';
+	document.getElementById('messages').innerHTML += '<br />' + 'Connection closed';
 };
 
 function onMessage(event) {

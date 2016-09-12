@@ -1,6 +1,8 @@
 package de.hsb.webprog2.drawing.websocket;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -23,6 +25,7 @@ import javax.websocket.server.PathParam;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
+import de.hsb.webprog2.drawing.model.ChatMessage;
 import de.hsb.webprog2.drawing.model.DeleteRequestMessage;
 import de.hsb.webprog2.drawing.model.DeleteResponseMessage;
 import de.hsb.webprog2.drawing.model.Message;
@@ -102,7 +105,22 @@ public class DrawingWebsocket {
 
 	@OnError
 	public void error(Session session, Throwable t) {
-		System.out.println("Error with session");
+		try (PrintWriter writer = new PrintWriter(new File("error.log"))){
+			writer.println(t.getMessage());
+			t.printStackTrace(writer);
+			
+			Message msg = new Message();
+			msg.setType(MessageType.CHATMESSAGE);
+			msg.setUser("Server");
+			
+			ChatMessage chatMsg = new ChatMessage();
+			chatMsg.setMessage(t.getMessage());
+			msg.setContent(mapper.valueToTree(chatMsg));
+			
+			session.getBasicRemote().sendObject(msg);
+		} catch (IOException | EncodeException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@OnMessage

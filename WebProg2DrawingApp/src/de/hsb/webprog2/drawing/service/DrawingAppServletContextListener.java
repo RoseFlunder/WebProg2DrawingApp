@@ -16,8 +16,6 @@ public class DrawingAppServletContextListener implements ServletContextListener 
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		System.out.println("context listener started");
-
 		ServletContext servletContext = sce.getServletContext();
 		DrawingServiceImpl drawingService = new DrawingServiceImpl();
 		servletContext.setAttribute(DrawingService.class.getName(), drawingService);
