@@ -152,7 +152,7 @@ public class DrawRobot extends Thread {
 			}
 			
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(20000);
 			} catch (InterruptedException e) {
 				System.err.println("Interrupted");
 				break;

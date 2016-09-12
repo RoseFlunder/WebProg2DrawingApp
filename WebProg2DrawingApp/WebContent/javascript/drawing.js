@@ -94,8 +94,8 @@ function onMessage(event) {
 		chatDiv.scrollTop = chatDiv.scrollHeight;
 		break;
 	case "DRAWMESSAGE":
-		console.log("received draw message");
-		console.log(msg);
+//		console.log("received draw message");
+//		console.log(msg);
 		if (!drawHistory.has(msg.id)){
 			drawHistory.set(msg.id, msg);
 			
@@ -130,9 +130,13 @@ function onMessage(event) {
 			// TODO: incoming animation start or stop message
 			console.log("Animation message");
 			console.log(msg);
+			drawHistory.set(msg.id, msg);
 			
 			if (msg.content.animate){
-				new animator(msg).animate();
+				//animate(msg);
+				new animator().animate();
+			} else {
+				//TODO: stop animation somehow
 			}
 		}
 		
@@ -174,15 +178,15 @@ function redrawHistoryOnCanvas(){
 	}
 }
 
-function animator(msgToAnimate){
-	this.msgToAnimate = msgToAnimate;
+function animator(){
+	this.isRunning = false;
 	
-	this.animate = function () {
-		if (this.msgToAnimate.content.animate){
-			console.log("redraw");
-			tools[this.msgToAnimate.content.type].draw(this.msgToAnimate.content);
-			window.requestAnimationFrame(this.animate);
-		}
+	this.animate = function(){
+		console.log("redraw");
+		redrawHistoryOnCanvas();
+		window.requestAnimationFrame(function() {
+			this.animate();
+        }.bind(this));
 	}
 }
 
@@ -201,9 +205,9 @@ function animateSelected(){
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
 	
-	drawMsg.animate = !drawMsg.animate;
-	if (drawMsg.animate){
-		var drawContent = drawMsg;
+	if (!drawMsg.animate){
+		drawMsg.animate = true;
+		var drawContent = drawMsg.content;
 		switch (msg.content.type) {
 		case "LINE":
 			drawContent.vx1 = Math.random() * 5;
@@ -218,6 +222,15 @@ function animateSelected(){
 	}
 	
 	webSocket.send(JSON.stringify(msg));
+}
+
+function stopAnimateSelected(){
+	// TODO: check if selected is own element
+	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
+	msg.content.animate = false;	
+	webSocket.send(JSON.stringify(msg));
+	
+	//stop animator or endless redraw calls
 }
 
 function clickOnDiv(element){
@@ -346,6 +359,14 @@ function lineTool() {
 		content = drawMessage.content;
 		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
+		
+		if (drawMessage.animate){
+			console.log("should calc new positions");
+			content.x1 += content.vx1;
+			content.x2 += content.vx2;
+			content.y1 += content.vy1;
+			content.y2 += content.vy2;
+		}
 		ctx.moveTo(content.x1, content.y1);
 		ctx.lineTo(content.x2, content.y2);
 		ctx.closePath();
