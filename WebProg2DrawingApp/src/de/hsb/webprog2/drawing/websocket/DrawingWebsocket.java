@@ -124,7 +124,8 @@ public class DrawingWebsocket {
 			chatMsg.setMessage(t.getMessage() + "\n" + stringWriter.toString());
 			msg.setContent(mapper.valueToTree(chatMsg));
 			
-			session.getBasicRemote().sendObject(msg);
+			if (session.getBasicRemote() != null && session.isOpen())
+				session.getBasicRemote().sendObject(msg);
 		} catch (IOException | EncodeException e) {
 			e.printStackTrace();
 		}

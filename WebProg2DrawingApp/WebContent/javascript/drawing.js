@@ -391,6 +391,22 @@ function lineTool() {
 			content.x2 += content.vx2;
 			content.y1 += content.vy1;
 			content.y2 += content.vy2;
+			
+			if (content.x1 > canvas.width || content.x1 < 0){
+				content.vx1 = -content.vx1;
+			}
+			
+			if (content.y1 > canvas.height || content.y1 < 0){
+				content.vy1 = -content.vy1;
+			}
+			
+			if (content.x2 > canvas.width || content.x2 < 0){
+				content.vx2 = -content.vx2;
+			}
+			
+			if (content.y2 > canvas.height || content.y2 < 0){
+				content.vy2 = -content.vy2;
+			}
 		}
 	}
 }
