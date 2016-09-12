@@ -1,7 +1,8 @@
-var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, drawHistory = new Map();
+var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, animator, drawHistory = new Map();
 var selectedHistoryElement;
 
 function init() {
+	animator = new animator();
 	var person = prompt("Please enter your name", "User");
 		
 	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing/" + person;
@@ -134,7 +135,7 @@ function onMessage(event) {
 			
 			if (msg.content.animate){
 				//animate(msg);
-				new animator().animate();
+				animator.start();
 			} else {
 				//TODO: stop animation somehow
 			}
@@ -181,13 +182,24 @@ function redrawHistoryOnCanvas(){
 function animator(){
 	this.isRunning = false;
 	
+	this.stop = function(){
+		this.isRunning = false;
+	};
+	
+	this.start = function(){
+		this.isRunning = true;
+		this.animate();
+	};
+	
 	this.animate = function(){
-		console.log("redraw");
-		redrawHistoryOnCanvas();
-		window.requestAnimationFrame(function() {
-			this.animate();
-        }.bind(this));
-	}
+		if (this.isRunning){
+			console.log("redraw");
+			redrawHistoryOnCanvas();
+			window.requestAnimationFrame(function() {
+				this.animate();
+	        }.bind(this));
+		}
+	};
 }
 
 function convertMillisToFormattedTimestamp(millis){
@@ -231,6 +243,7 @@ function stopAnimateSelected(){
 	webSocket.send(JSON.stringify(msg));
 	
 	//stop animator or endless redraw calls
+	animator.stop();
 }
 
 function clickOnDiv(element){
