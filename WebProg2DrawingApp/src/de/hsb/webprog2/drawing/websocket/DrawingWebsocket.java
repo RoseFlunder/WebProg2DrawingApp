@@ -141,6 +141,8 @@ public class DrawingWebsocket {
 			if (msg.getId() == null) {
 				msg.setId(UUID.randomUUID().toString());
 				drawingService.addDrawingMessageToHistory(msg);
+			} else {
+				drawingService.replaceDrawingMessageInHistory(msg);
 			}
 			break;
 		case DELETE_REQUEST_MESSAGE:

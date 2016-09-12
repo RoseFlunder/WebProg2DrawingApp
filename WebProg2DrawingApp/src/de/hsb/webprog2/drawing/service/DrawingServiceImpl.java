@@ -18,6 +18,19 @@ public class DrawingServiceImpl implements DrawingService {
 	public void addDrawingMessageToHistory(Message msg) {
 		history.addLast(msg);
 	}
+	
+	@Override
+	public void replaceDrawingMessageInHistory(Message msg) {
+		synchronized (history) {
+			for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
+				Message message = iterator.next();
+				if (msg.getId().equals(message.getId())){
+					message.setContent(msg.getContent());
+					break;
+				}
+			}
+		}		
+	}
 
 	@Override
 	public Deque<Message> getHistory() {
@@ -62,5 +75,6 @@ public class DrawingServiceImpl implements DrawingService {
 		
 		return deletedIds;
 	}
+
 
 }

@@ -10,6 +10,8 @@ public interface DrawingService {
 	
 	public void addDrawingMessageToHistory(Message msg);
 	
+	public void replaceDrawingMessageInHistory(Message msg);
+	
 	public Set<String> removeFromHistory(String id, DeleteMode mode);
 
 	public Deque<Message> getHistory();

@@ -135,10 +135,12 @@ function onMessage(event) {
 			
 			if (msg.content.animate){
 				//animate(msg);
-				animator.start();
+				animator.addElement(msg);
 			} else {
-				//TODO: stop animation somehow
+				animator.removeElement(msg);
 			}
+			
+			redrawHistoryOnCanvas();
 		}
 		
 		break;
@@ -181,20 +183,32 @@ function redrawHistoryOnCanvas(){
 
 function animator(){
 	this.isRunning = false;
+	this.elementsToAnimate = new Map();
 	
-	this.stop = function(){
-		this.isRunning = false;
+	this.addElement = function (msg){
+		this.elementsToAnimate.set(msg.id, msg);
+		if (!this.isRunning){
+			this.isRunning = true;
+			this.animate();
+		}
 	};
 	
-	this.start = function(){
-		this.isRunning = true;
-		this.animate();
-	};
+	this.removeElement = function(msg){
+		this.elementsToAnimate.delete(msg.id);
+		if (this.elementsToAnimate.size == 0){
+			this.isRunning = false;
+		}
+	}
 	
 	this.animate = function(){
-		if (this.isRunning){
+		if (this.elementsToAnimate.size > 0){
 			console.log("redraw");
-			redrawHistoryOnCanvas();
+			
+			for (var [key, value] of this.elementsToAnimate) {
+				tools[value.content.type].onAnimate(value.content);
+				webSocket.send(JSON.stringify(value));
+			}
+			
 			window.requestAnimationFrame(function() {
 				this.animate();
 	        }.bind(this));
@@ -216,22 +230,8 @@ function animateSelected(){
 	// TODO: check if selected is own element
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
-	
-	if (!drawMsg.animate){
-		drawMsg.animate = true;
-		var drawContent = drawMsg.content;
-		switch (msg.content.type) {
-		case "LINE":
-			drawContent.vx1 = Math.random() * 5;
-			drawContent.vy1 = Math.random() * 5;
-			drawContent.vx2 = Math.random() * 5;
-			drawContent.vy2 = Math.random() * 5;
-			break;
-
-		default:
-			break;
-		}
-	}
+	drawMsg.animate = true;
+	tools[drawMsg.type].setAnimationParams(drawMsg);
 	
 	webSocket.send(JSON.stringify(msg));
 }
@@ -241,9 +241,6 @@ function stopAnimateSelected(){
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	msg.content.animate = false;	
 	webSocket.send(JSON.stringify(msg));
-	
-	//stop animator or endless redraw calls
-	animator.stop();
 }
 
 function clickOnDiv(element){
@@ -372,18 +369,29 @@ function lineTool() {
 		content = drawMessage.content;
 		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
+		ctx.moveTo(content.x1, content.y1);
+		ctx.lineTo(content.x2, content.y2);
+		ctx.closePath();
+		ctx.stroke();
+	}
+	
+	this.setAnimationParams = function (drawMessage){
+		content = drawMessage.content;
 		
+		content.vx1 = Math.random() * 5;
+		content.vy1 = Math.random() * 5;
+		content.vx2 = Math.random() * 5;
+		content.vy2 = Math.random() * 5;
+	}
+	
+	this.onAnimate = function(drawMessage){
 		if (drawMessage.animate){
-			console.log("should calc new positions");
+			content = drawMessage.content;
 			content.x1 += content.vx1;
 			content.x2 += content.vx2;
 			content.y1 += content.vy1;
 			content.y2 += content.vy2;
 		}
-		ctx.moveTo(content.x1, content.y1);
-		ctx.lineTo(content.x2, content.y2);
-		ctx.closePath();
-		ctx.stroke();
 	}
 }
 
