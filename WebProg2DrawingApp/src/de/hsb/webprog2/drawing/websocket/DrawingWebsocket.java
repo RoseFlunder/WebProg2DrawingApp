@@ -1,8 +1,6 @@
 package de.hsb.webprog2.drawing.websocket;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -105,10 +103,7 @@ public class DrawingWebsocket {
 
 	@OnError
 	public void error(Session session, Throwable t) {
-		try (PrintWriter writer = new PrintWriter(new File("error.log"))){
-			writer.println(t.getMessage());
-			t.printStackTrace(writer);
-			
+		try {
 			Message msg = new Message();
 			msg.setType(MessageType.CHATMESSAGE);
 			msg.setUser("Server");
