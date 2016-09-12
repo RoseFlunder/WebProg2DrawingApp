@@ -21,13 +21,14 @@ public class DrawingAppServletContextListener implements ServletContextListener 
 		servletContext.setAttribute(DrawingService.class.getName(), drawingService);
 
 		//deploy websocket
-		try {
+		try {			
 			ServerContainer container = (ServerContainer) servletContext
 					.getAttribute("javax.websocket.server.ServerContainer");
 			ServerEndpointConfig c = ServerEndpointConfig.Builder.create(DrawingWebsocket.class, "/websocket/drawing/{username}")
 					.decoders(Arrays.asList(MessageDecoder.class)).encoders(Arrays.asList(MessageEncoder.class))
 					.build();
 			c.getUserProperties().put(DrawingService.class.getName(), drawingService);
+			c.getUserProperties().put("websocket_url_robot", servletContext.getInitParameter("websocket_url_robot"));
 			container.addEndpoint(c);
 		} catch (Exception e) {
 			e.printStackTrace();

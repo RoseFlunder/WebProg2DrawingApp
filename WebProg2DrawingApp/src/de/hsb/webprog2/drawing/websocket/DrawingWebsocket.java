@@ -1,6 +1,8 @@
 package de.hsb.webprog2.drawing.websocket;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -42,12 +44,14 @@ public class DrawingWebsocket {
 
 	private DrawingService drawingService;
 	private ObjectMapper mapper = new ObjectMapper();
+	private String robotUri;
+	
 	private static DrawRobot robot;
 
 	@OnOpen
 	public void open(Session session, EndpointConfig config, @PathParam("username") String userName) {
-		System.out.println("Open new session");
 		drawingService = (DrawingService) config.getUserProperties().get(DrawingService.class.getName());
+		robotUri = config.getUserProperties().get("websocket_url_robot").toString();
 		
 		if (clients.containsKey(userName)){
 			int i = 1;
@@ -68,30 +72,31 @@ public class DrawingWebsocket {
 		
 		Deque<Message> history = drawingService.getHistory();
 		for (Message message : history) {
-			System.out.println("sending history message");
 			synchronized (session) {
 				try {
 					session.getBasicRemote().sendObject(message);
 				} catch (IOException | EncodeException e) {
-					System.err.println(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}
 
-		checkRobot();
+		checkRobot(robotUri);
 	}
 
 	@OnClose
 	public void close(Session session, @PathParam("username") String userName) {
 		System.out.println("Session closed");
 		clients.remove(userName);
-		checkRobot();
+		checkRobot(robotUri);
 	}
 
-	private static synchronized void checkRobot() {
+	private static synchronized void checkRobot(String robotURI) {
 		if (clients.size() < 3 && (robot == null || !robot.isAlive())) {
 			try {
-				robot = new DrawRobot(new URI("ws://localhost:8080/WebProg2DrawingApp/websocket/drawing/Robot"));
+//				ws://localhost/WebProg2DrawingApp/websocket/drawing/Robot/
+//				ws://195.37.49.24/sos16_03/websocket/drawing/Robot/
+				robot = new DrawRobot(new URI(robotURI));
 				robot.start();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
@@ -108,8 +113,15 @@ public class DrawingWebsocket {
 			msg.setType(MessageType.CHATMESSAGE);
 			msg.setUser("Server");
 			
+			StringWriter stringWriter = new StringWriter();
+			
+			try (PrintWriter writer = new PrintWriter(stringWriter)){
+				t.printStackTrace(writer);
+			} catch (Exception e) {
+			}
+			
 			ChatMessage chatMsg = new ChatMessage();
-			chatMsg.setMessage(t.getMessage());
+			chatMsg.setMessage(t.getMessage() + "\n" + stringWriter.toString());
 			msg.setContent(mapper.valueToTree(chatMsg));
 			
 			session.getBasicRemote().sendObject(msg);
