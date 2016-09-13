@@ -291,10 +291,12 @@ function getColorFromRGBA(color){
 
 function sendDrawMessage(content){
 	var hex = 'FF' + document.getElementById('lineColorPicker').value.substring(1);
-	var lineColor = parseInt(hex, 16);
-	console.log(lineColor);
-	content.lineColor = lineColor;
-	content.fillColor = 0;
+	content.lineColor = parseInt(hex, 16);
+	
+	if (document.getElementById('useFillColor').checked){
+		hex = 'FF' + document.getElementById('fillColorPicker').value.substring(1);
+		content.fillColor = parseInt(hex, 16);
+	}
 
 	var msg = {
 		user : document.getElementById("username").value,
@@ -462,11 +464,18 @@ function rectangleTool() {
 
 	this.draw = function(drawMessage) {
 		content = drawMessage.content;
+		var oldFillStyle = ctx.fillStyle;
 		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.rect(content.x, content.y, content.width, content.height);
+		if (drawMessage.fillColor){
+			ctx.fillStyle = getColorFromRGBA(drawMessage.fillColor);
+			ctx.fillRect(content.x+1, content.y+1, content.width-1, content.height-1);
+		}
 		ctx.closePath();
 		ctx.stroke();
+		
+		ctx.fillStyle = oldFillStyle;
 	}
 	
 	this.setAnimationParams = function (drawMessage){
@@ -568,6 +577,14 @@ function circleTool() {
 		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
 		ctx.beginPath();
 		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
+		
+		var oldFillStyle = ctx.fillStyle;
+		if (drawMessage.fillColor){
+			ctx.fillStyle = getColorFromRGBA(drawMessage.fillColor);
+			ctx.fill();
+		}
+		ctx.fillStyle = oldFillStyle;
+		
 		ctx.closePath();
 		ctx.stroke();
 	}
