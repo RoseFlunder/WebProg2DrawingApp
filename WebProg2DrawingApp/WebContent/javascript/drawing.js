@@ -449,10 +449,10 @@ function rectangleTool() {
 			var content = {
 				type : "RECTANGLE",
 				content : {
-					x : x1,
-					y : y1,
-					width : width,
-					height : height
+					x : Math.min(x1, x2),
+					y : Math.min(y1, y2),
+					width : Math.abs(x2 - x1),
+					height : Math.abs(y2 - y1)
 				}
 			}
 			
@@ -467,6 +467,41 @@ function rectangleTool() {
 		ctx.rect(content.x, content.y, content.width, content.height);
 		ctx.closePath();
 		ctx.stroke();
+	}
+	
+	this.setAnimationParams = function (drawMessage){
+		content = drawMessage.content;
+		
+		content.vx = Math.random() * 5;
+		content.vy = Math.random() * 5;
+		content.vWidth = Math.random() * 5;
+		content.vHeight = Math.random() * 5;
+	}
+	
+	this.onAnimate = function(drawMessage){
+		if (drawMessage.animate){
+			content = drawMessage.content;
+			content.x += content.vx;
+			content.y += content.vy;
+			
+			if (content.x + content.width > canvas.width || content.x < 0){
+				content.vx = -content.vx;
+			}
+			
+			if (content.y + content.height > canvas.height || content.y < 0){
+				content.vy = -content.vy;
+			}
+			
+			if (content.x + content.width + content.vWidth <= canvas.width && content.width + content.vWidth >= 0)
+				content.width += content.vWidth;
+			else
+				content.vWidth = -content.vWidth;
+			
+			if (content.y + content.height + content.vHeight <= canvas.height && content.height + content.vHeight >= 0)
+				content.height += content.vHeight;
+			else
+				content.vHeight = -content.vHeight;
+		}
 	}
 }
 
@@ -535,6 +570,37 @@ function circleTool() {
 		ctx.arc(content.x, content.y, content.radius, 0, Math.PI * 2);
 		ctx.closePath();
 		ctx.stroke();
+	}
+	
+	this.setAnimationParams = function (drawMessage){
+		content = drawMessage.content;
+		
+		content.vx = Math.random() * 5;
+		content.vy = Math.random() * 5;
+		content.vRadius = Math.random() * 5;
+	}
+	
+	this.onAnimate = function(drawMessage){
+		if (drawMessage.animate){
+			content = drawMessage.content;
+			content.x += content.vx;
+			content.y += content.vy;
+			
+			if (content.x + content.radius > canvas.width || content.x < 0){
+				content.vx = -content.vx;
+			}
+			
+			if (content.y + content.radius > canvas.height || content.y < 0){
+				content.vy = -content.vy;
+			}
+			
+			if (content.x + content.radius + content.vRadius <= canvas.width &&
+					content.y + content.radius + content.vRadius <= canvas.height &&
+					content.radius + content.vRadius >= 0)
+				content.radius += content.vRadius;
+			else
+				content.vRadius = -content.vRadius;
+		}
 	}
 }
 

@@ -8,6 +8,44 @@ public class DrawRectangleMessage {
 	private int width;
 	private int height;
 	
+	private int vx;
+	private int vy;
+	
+	private int vWidth;
+	private int vHeight;
+	
+	public int getVx() {
+		return vx;
+	}
+
+	public void setVx(int vx) {
+		this.vx = vx;
+	}
+
+	public int getVy() {
+		return vy;
+	}
+
+	public void setVy(int vy) {
+		this.vy = vy;
+	}
+
+	public int getvWidth() {
+		return vWidth;
+	}
+
+	public void setvWidth(int vWidth) {
+		this.vWidth = vWidth;
+	}
+
+	public int getvHeight() {
+		return vHeight;
+	}
+
+	public void setvHeight(int vHeight) {
+		this.vHeight = vHeight;
+	}
+
 	public DrawRectangleMessage() {
 	}
 
