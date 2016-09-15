@@ -147,6 +147,7 @@ function onMessage(event) {
 		// remove ids to delete from history object		
 		for (var id of msg.content.deletedIds) {
 			console.log(id);
+			animator.removeElement(drawHistory.get(id));
 			drawHistory.delete(id);
 			document.getElementById("history").removeChild(document.getElementById(id));
 		}
