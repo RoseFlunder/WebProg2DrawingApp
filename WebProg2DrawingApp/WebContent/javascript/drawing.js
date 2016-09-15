@@ -89,9 +89,13 @@ function onMessage(event) {
 	switch (msg.type) {
 	case "CHATMESSAGE":
 		console.log("received chat message");
-		document.getElementById('messages').innerHTML += '<br />' + msg.user + ' (' + convertMillisToFormattedTime(msg.timestamp) + ')'
-				+ ": " + msg.content.message;
 		var chatDiv = document.getElementById('messages');
+		
+		var textNode = document.createTextNode(msg.user + ' (' + convertMillisToFormattedTime(msg.timestamp) + ')'
+				+ ": " + msg.content.message);
+		var divChatMsg = document.createElement("div");
+		divChatMsg.appendChild(textNode);
+		chatDiv.appendChild(divChatMsg);
 		chatDiv.scrollTop = chatDiv.scrollHeight;
 		break;
 	case "DRAWMESSAGE":
