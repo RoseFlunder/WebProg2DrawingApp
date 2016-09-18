@@ -56,12 +56,22 @@ div.deActiveDiv{
     width: 64px;
 }
 
+#animate_selected:DISABLED {
+	background-image: url( '../images/play_disabled.png' );
+}
+
 #stop_animate_selected {
     background-image: url( '../images/stop.png' );
     background-size: 60px 40px;
     height: 44px;  
     width: 64px;
 }
+
+
+#stop_animate_selected:DISABLED {
+	background-image: url( '../images/stop_disabled.png' );
+}
+
 
 #delete_after {
     background-image: url( '../images/deleteunder.png' );

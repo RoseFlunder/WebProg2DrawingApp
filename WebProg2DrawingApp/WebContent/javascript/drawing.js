@@ -254,6 +254,11 @@ function clickOnDiv(element){
 	
 	element.classList.remove("deActiveDiv");
 	element.classList.add("activeDiv");
+	
+	var msg = drawHistory.get(element.getAttribute("id"));
+	document.getElementById("animate_selected").disabled = (document.getElementById("username").value != msg.user);
+	document.getElementById("stop_animate_selected").disabled = (document.getElementById("username").value != msg.user);
+	
 	selectedHistoryElement = element;
 }
 
