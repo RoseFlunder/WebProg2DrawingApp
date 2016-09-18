@@ -17,9 +17,12 @@
 				<button id="circleTool" onclick="selectTool('CIRCLE')"></button>
 				<button id="rectangleTool" onclick="selectTool('RECTANGLE')"></button>
 				<button id="polygonTool" onclick="selectTool('POLYGON')"></button>
+				<div>Color:</div>
 				<input type="color" id="lineColorPicker" value="#000000" />
-				
-				<input type="checkbox" id="useFillColor">
+				<div>
+					Fill:
+					<input type="checkbox" id="useFillColor">
+				</div>
 				<input type="color" id="fillColorPicker" value="#000000" />
 			</div>
 
@@ -43,7 +46,7 @@
 				<button id="delete_before" onclick="deleteSelected('ALL_BEFORE')"></button>
 				<button id="delete_after" onclick="deleteSelected('ALL_AFTER')"></button>
 				<button id="animate_selected" onclick="animateSelected()"></button>
-				<button id="stop_animate_selected" onclick="stopAnimateSelected()">Stop animation</button>
+				<button id="stop_animate_selected" onclick="stopAnimateSelected()"></button>
 				<div id="history"></div>
 			</div>
 		</div>

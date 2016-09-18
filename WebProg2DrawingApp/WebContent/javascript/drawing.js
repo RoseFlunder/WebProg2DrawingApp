@@ -135,6 +135,14 @@ function onMessage(event) {
 			// TODO: incoming animation start or stop message
 			console.log("Animation message");
 			console.log(msg);
+			if(msg.content.animate){
+				if(document.getElementById(msg.id).getAttribute("class") != "animatedDiv"){
+					document.getElementById(msg.id).setAttribute("class", "animatedDiv");
+				}
+			}
+			else{
+				document.getElementById(msg.id).setAttribute("class", "deActiveDiv");
+			}
 			drawHistory.set(msg.id, msg);
 			redrawHistoryOnCanvas();
 		}
@@ -227,10 +235,11 @@ function animateSelected(){
 	// TODO: check if selected is own element
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
-	drawMsg.animate = true;
-	tools[drawMsg.type].setAnimationParams(drawMsg);
-	
-	animator.addElement(msg);
+	if(document.getElementById("username").value == msg.user){
+		drawMsg.animate = true;
+		tools[drawMsg.type].setAnimationParams(drawMsg);
+		animator.addElement(msg);
+	}
 }
 
 function stopAnimateSelected(){

@@ -11,6 +11,14 @@ button {
     vertical-align: top;
 }
 
+div.animatedDiv{
+	width: 100%;
+	border: 1px solid gray;
+	margin: 0px;
+	padding: 5px;
+	background-color: green;
+}
+
 div.activeDiv{
 	width: 100%;
 	border: 1px solid gray;
@@ -34,8 +42,22 @@ div.deActiveDiv{
     width: 64px;
 }
 
+#fillColorPicker{
+	background-color: white;
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
 #animate_selected {
     background-image: url( '../images/play.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
+#stop_animate_selected {
+    background-image: url( '../images/stop.png' );
     background-size: 60px 40px;
     height: 44px;  
     width: 64px;
