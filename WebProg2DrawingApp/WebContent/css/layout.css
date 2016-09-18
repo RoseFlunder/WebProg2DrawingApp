@@ -16,21 +16,21 @@ div.animatedDiv{
 	border: 1px solid gray;
 	margin: 0px;
 	padding: 5px;
-	background-color: green;
+	background-color: #80ff00;
 }
 
 div.activeDiv{
 	width: 100%;
-	border: 1px solid gray;
-	margin: 0px;
+	border: 2px solid gray;
+	margin: 3px;
 	padding: 5px;
-	background-color: red;
+	box-shadow: 5px 5px 5px #888888;
 }
 
 div.deActiveDiv{
 	width: 100%;
 	border: 1px solid gray;
-	margin: 0px;
+	margin: 3px;
 	padding: 5px;
 	background-color: white;
 }

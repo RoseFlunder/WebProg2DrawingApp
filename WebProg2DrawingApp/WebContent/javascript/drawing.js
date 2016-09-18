@@ -99,8 +99,8 @@ function onMessage(event) {
 		chatDiv.scrollTop = chatDiv.scrollHeight;
 		break;
 	case "DRAWMESSAGE":
-//		console.log("received draw message");
-//		console.log(msg);
+// console.log("received draw message");
+// console.log(msg);
 		if (!drawHistory.has(msg.id)){
 			drawHistory.set(msg.id, msg);
 			
@@ -135,14 +135,10 @@ function onMessage(event) {
 			// TODO: incoming animation start or stop message
 			console.log("Animation message");
 			console.log(msg);
-			if(msg.content.animate){
-				if(document.getElementById(msg.id).getAttribute("class") != "animatedDiv"){
-					document.getElementById(msg.id).setAttribute("class", "animatedDiv");
-				}
-			}
-			else{
-				document.getElementById(msg.id).setAttribute("class", "deActiveDiv");
-			}
+			if(msg.content.animate)
+				document.getElementById(msg.id).classList.add("animatedDiv");
+			else
+				document.getElementById(msg.id).classList.remove("animatedDiv");
 			drawHistory.set(msg.id, msg);
 			redrawHistoryOnCanvas();
 		}
@@ -152,7 +148,7 @@ function onMessage(event) {
 	case "DELETE_RESPONSE_MESSAGE":
 		console.log("received delete message");
 		console.log(msg);
-		// remove ids to delete from history object		
+		// remove ids to delete from history object
 		for (var id of msg.content.deletedIds) {
 			console.log(id);
 			animator.removeElement(drawHistory.get(id));
@@ -247,13 +243,17 @@ function stopAnimateSelected(){
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	msg.content.animate = false;	
 	animator.removeElement(msg);
+	webSocket.send(JSON.stringify(msg));
 }
 
 function clickOnDiv(element){
-	if (selectedHistoryElement)
-		selectedHistoryElement.setAttribute("class", "deActiveDiv");
+	if (selectedHistoryElement){
+		selectedHistoryElement.classList.remove("activeDiv");
+		selectedHistoryElement.classList.add("deActiveDiv");
+	}
 	
-	element.setAttribute("class", "activeDiv");
+	element.classList.remove("deActiveDiv");
+	element.classList.add("activeDiv");
 	selectedHistoryElement = element;
 }
 
