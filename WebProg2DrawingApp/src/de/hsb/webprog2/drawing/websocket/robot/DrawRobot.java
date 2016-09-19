@@ -160,7 +160,8 @@ public class DrawRobot extends Thread {
 		}
 		
 		try {
-			this.session.close();
+			if (session != null)
+				this.session.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

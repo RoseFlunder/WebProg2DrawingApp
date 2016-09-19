@@ -88,7 +88,6 @@ function onMessage(event) {
 
 	switch (msg.type) {
 	case "CHATMESSAGE":
-		console.log("received chat message");
 		var chatDiv = document.getElementById('messages');
 		
 		var textNode = document.createTextNode(msg.user + ' (' + convertMillisToFormattedTime(msg.timestamp) + ')'
@@ -99,46 +98,30 @@ function onMessage(event) {
 		chatDiv.scrollTop = chatDiv.scrollHeight;
 		break;
 	case "DRAWMESSAGE":
-// console.log("received draw message");
-// console.log(msg);
+		var drawMsg = msg.content;
+		var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + drawMsg.type + "| ";
+		spanText += tools[drawMsg.type].getHistoryDescription(drawMsg.content);
+		
 		if (!drawHistory.has(msg.id)){
 			drawHistory.set(msg.id, msg);
 			
-			var msgType = msg.content;
-			var msgContent = msgType.content;
-			
-			var spanText = msg.user + " | " + convertMillisToFormattedTimestamp(msg.timestamp) + " | " + msgType.type;
 			var divnode = document.createElement("div");
 			divnode.setAttribute("onclick", "clickOnDiv(this)");
 			divnode.setAttribute("class", "deActiveDiv");
 			divnode.setAttribute("id", msg.id);
-			switch(msgType.type){
-				case "CIRCLE":
-					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") radius:" + msgContent.radius;
-				break;
-				case "LINE":
-					spanText += " | (" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
-				break;
-				case "RECTANGLE":
-					spanText += " | (" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height;
-				break;
-				case "POLYGON":
-					spanText += " | points: " + msgContent.xPoints.length;
-				break;
-			}
-
+			
 			var textnode = document.createTextNode(spanText);
 			divnode.appendChild(textnode);
 			document.getElementById('history').appendChild(divnode);
-			tools[msg.content.type].draw(msg.content);
+			tools[drawMsg.type].draw(drawMsg);
 		} else {
-			// TODO: incoming animation start or stop message
-			console.log("Animation message");
-			console.log(msg);
-			if(msg.content.animate)
-				document.getElementById(msg.id).classList.add("animatedDiv");
+			var historyEntry = document.getElementById(msg.id);
+			historyEntry.textContent = spanText;
+			
+			if(drawMsg.animate)
+				historyEntry.classList.add("animatedDiv");
 			else
-				document.getElementById(msg.id).classList.remove("animatedDiv");
+				historyEntry.classList.remove("animatedDiv");
 			drawHistory.set(msg.id, msg);
 			redrawHistoryOnCanvas();
 		}
@@ -146,8 +129,6 @@ function onMessage(event) {
 		break;
 		
 	case "DELETE_RESPONSE_MESSAGE":
-		console.log("received delete message");
-		console.log(msg);
 		// remove ids to delete from history object
 		for (var id of msg.content.deletedIds) {
 			console.log(id);
@@ -315,6 +296,9 @@ function sendDrawMessage(content){
 	if (document.getElementById('useFillColor').checked){
 		hex = 'FF' + document.getElementById('fillColorPicker').value.substring(1);
 		content.fillColor = parseInt(hex, 16);
+		content.useFillColor = true;
+	} else {
+		content.useFillColor = false;
 	}
 
 	var msg = {
@@ -333,8 +317,10 @@ function lineTool() {
 
 	var x1, x2, y1, y2;
 
-	// This is called when you start holding down the mouse button.
-	// This starts the pencil drawing.
+	this.getHistoryDescription = function(msgContent){
+		return "(" + msgContent.x1 + "/" + msgContent.y1 + ")(" + msgContent.x2 + "/" + msgContent.y2 + ")";
+	};
+	
 	this.mousedown = function(ev) {
 		x1 = ev._x;
 		y1 = ev._y;
@@ -354,7 +340,6 @@ function lineTool() {
 		}
 	};
 
-	// This is called when you release the mouse button.
 	this.mouseup = function(ev) {
 		if (tool.started) {
 			tool.started = false;
@@ -391,10 +376,10 @@ function lineTool() {
 	this.setAnimationParams = function (drawMessage){
 		content = drawMessage.content;
 		
-		content.vx1 = Math.random() * 5;
-		content.vy1 = Math.random() * 5;
-		content.vx2 = Math.random() * 5;
-		content.vy2 = Math.random() * 5;
+		content.vx1 = parseInt(Math.random() * 5) + 1;
+		content.vy1 = parseInt(Math.random() * 5) + 1;
+		content.vx2 = parseInt(Math.random() * 5) + 1;
+		content.vy2 = parseInt(Math.random() * 5) + 1;
 	}
 	
 	this.onAnimate = function(drawMessage){
@@ -429,6 +414,10 @@ function rectangleTool() {
 	var started = false;
 
 	var x1, x2, y1, y2, width, height;
+	
+	this.getHistoryDescription = function(msgContent){
+		return "(" + msgContent.x + "/" + msgContent.y + ") widht:" + msgContent.width + " height:" + msgContent.height
+	};
 
 	this.mousedown = function(ev) {
 		ctx.beginPath();
@@ -500,10 +489,10 @@ function rectangleTool() {
 	this.setAnimationParams = function (drawMessage){
 		content = drawMessage.content;
 		
-		content.vx = Math.random() * 5;
-		content.vy = Math.random() * 5;
-		content.vWidth = Math.random() * 5;
-		content.vHeight = Math.random() * 5;
+		content.vx = parseInt(Math.random() * 5) + 1;
+		content.vy = parseInt(Math.random() * 5) + 1;
+		content.vWidth = parseInt(Math.random() * 5) + 1;
+		content.vHeight = parseInt(Math.random() * 5) + 1;
 	}
 	
 	this.onAnimate = function(drawMessage){
@@ -538,6 +527,10 @@ function circleTool() {
 	var started = false;
 
 	var x1, x2, y1, y2;
+	
+	this.getHistoryDescription = function(msgContent){
+		return "(" + msgContent.x + "/" + msgContent.y + ") radius:" + msgContent.radius;
+	};
 
 	this.mousedown = function(ev) {
 		ctx.beginPath();
@@ -611,9 +604,9 @@ function circleTool() {
 	this.setAnimationParams = function (drawMessage){
 		content = drawMessage.content;
 		
-		content.vx = Math.random() * 5;
-		content.vy = Math.random() * 5;
-		content.vRadius = Math.random() * 5;
+		content.vx = parseInt(Math.random() * 5) + 1;
+		content.vy = parseInt(Math.random() * 5) + 1;
+		content.vRadius = parseInt(Math.random() * 5) + 1;
 	}
 	
 	this.onAnimate = function(drawMessage){
@@ -648,10 +641,13 @@ function polygonTool() {
 	var x2, y2;
 	
 	this.keypressed = false;
+	
+	this.getHistoryDescription = function(msgContent){
+		return "points: " + msgContent.xPoints.length;
+	};
 
 	this.mousedown = function(ev) {
 		if(tool.keypressed){
-			console.log("mousedown polygon with key pressed");
 			ctx.beginPath();
 			ctx.moveTo(ev._x, ev._y);
 			x.push(ev._x);
@@ -662,7 +658,6 @@ function polygonTool() {
 	
 	this.endPolygon = function() {
 		if (tool.started) {
-			console.log("tool end");
 			tool.started = false;
 			previewCtx.clearRect(0, 0, previewCanvas.width,
 					previewCanvas.height);
@@ -722,7 +717,42 @@ function polygonTool() {
 		}
 		ctx.lineTo(content.xPoints[0], content.yPoints[0]);
 		ctx.closePath();
+		
+		var oldFillStyle = ctx.fillStyle;
+		if (drawMessage.fillColor){
+			ctx.fillStyle = getColorFromRGBA(drawMessage.fillColor);
+			ctx.fill();
+		}
+		ctx.fillStyle = oldFillStyle;
+		
 		ctx.stroke();
+	}
+	
+	this.setAnimationParams = function (drawMessage){
+		content = drawMessage.content;
+		
+		content.vx = [];
+		content.vy = [];
+		
+		for (var i = 0; i < content.xPoints.length; ++i){
+			content.vx.push(parseInt(Math.random() * 5) + 1);
+			content.vy.push(parseInt(Math.random() * 5) + 1);
+		}
+	}
+	
+	this.onAnimate = function(drawMessage){
+		if (drawMessage.animate){
+			content = drawMessage.content;
+			
+			for (var i = 0; i < content.xPoints.length; ++i){
+				if (content.xPoints[i] + content.vx[i] > canvas.width || content.xPoints[i] + content.vx[i] < 0)
+					content.vx[i] = -content.vx[i];
+				if (content.yPoints[i] + content.vy[i] > canvas.height || content.yPoints[i] + content.vy[i] < 0)
+					content.vy[i] = -content.vy[i];
+				content.xPoints[i] = content.xPoints[i] + content.vx[i];
+				content.yPoints[i] = content.yPoints[i] + content.vy[i];
+			}
+		}
 	}
 }
 
@@ -751,4 +781,10 @@ function onKeyPressed(ev) {
 	document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
 };
 
+function saveHistory(){
+	window.open("rest/drawing/history",'_blank');
+}
 
+function saveImage(){
+	window.open("rest/drawing/image",'_blank');
+}

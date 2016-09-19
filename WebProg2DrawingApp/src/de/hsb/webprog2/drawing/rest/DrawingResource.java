@@ -57,7 +57,6 @@ public class DrawingResource {
 		Graphics2D graphics = (Graphics2D) image.createGraphics();
 		graphics.setBackground(Color.WHITE);
 		graphics.clearRect(0, 0, 800, 600);
-		graphics.setColor(Color.BLACK);
 		ObjectMapper mapper = new ObjectMapper();
 
 		for (Message message : service.getHistory()) {
@@ -66,21 +65,44 @@ public class DrawingResource {
 				drawMsg = mapper.readValue(message.getContent(), DrawMessage.class);
 				switch (drawMsg.getType()) {
 				case LINE:
+					graphics.setColor(new Color(drawMsg.getLineColor()));
 					DrawLineMessage lineMsg = mapper.readValue(drawMsg.getContent(), DrawLineMessage.class);
 					graphics.drawLine(lineMsg.getX1(), lineMsg.getY1(), lineMsg.getX2(), lineMsg.getY2());
 					break;
 				case CIRCLE:
 					DrawCircleMessage circleMsg = mapper.readValue(drawMsg.getContent(), DrawCircleMessage.class);
+					if (drawMsg.isUseFillColor()) {
+						graphics.setColor(new Color(drawMsg.getFillColor()));
+						graphics.fillOval(circleMsg.getX() - circleMsg.getRadius(),
+								circleMsg.getY() - circleMsg.getRadius(), circleMsg.getRadius() * 2,
+								circleMsg.getRadius() * 2);
+					}
+					
+					graphics.setColor(new Color(drawMsg.getLineColor()));
 					graphics.drawOval(circleMsg.getX() - circleMsg.getRadius(),
 							circleMsg.getY() - circleMsg.getRadius(), circleMsg.getRadius() * 2,
 							circleMsg.getRadius() * 2);
+					
 					break;
 				case RECTANGLE:
 					DrawRectangleMessage rectMsg = mapper.readValue(drawMsg.getContent(), DrawRectangleMessage.class);
+					if (drawMsg.isUseFillColor()) {
+						graphics.setColor(new Color(drawMsg.getFillColor()));
+						graphics.fillRect(rectMsg.getX(), rectMsg.getY(), rectMsg.getWidth(), rectMsg.getHeight());
+					}
+					
+					graphics.setColor(new Color(drawMsg.getLineColor()));
 					graphics.drawRect(rectMsg.getX(), rectMsg.getY(), rectMsg.getWidth(), rectMsg.getHeight());
 					break;
 				case POLYGON:
 					DrawPolygonMessage polyMsg = mapper.readValue(drawMsg.getContent(), DrawPolygonMessage.class);
+					
+					if (drawMsg.isUseFillColor()) {
+						graphics.setColor(new Color(drawMsg.getFillColor()));
+						graphics.fillPolygon(polyMsg.getxPoints(), polyMsg.getyPoints(), polyMsg.getxPoints().length);
+					}
+					
+					graphics.setColor(new Color(drawMsg.getLineColor()));
 					graphics.drawPolygon(polyMsg.getxPoints(), polyMsg.getyPoints(), polyMsg.getxPoints().length);
 					break;
 				default:

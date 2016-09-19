@@ -11,6 +11,7 @@ public class DrawMessage {
 	private DrawType type;
 	private boolean animate;
 	private int lineColor;
+	private boolean useFillColor;
 	private int fillColor;
 	private JsonNode content;
 	
@@ -55,5 +56,13 @@ public class DrawMessage {
 
 	public void setLineColor(int lineColor) {
 		this.lineColor = lineColor;
+	}
+
+	public boolean isUseFillColor() {
+		return useFillColor;
+	}
+
+	public void setUseFillColor(boolean useFillColor) {
+		this.useFillColor = useFillColor;
 	}
 }
