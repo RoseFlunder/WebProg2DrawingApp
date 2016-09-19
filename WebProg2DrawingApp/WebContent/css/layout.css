@@ -11,28 +11,25 @@ button {
     vertical-align: top;
 }
 
-div.animatedDiv{
+#history>div{
 	width: 100%;
-	border: 1px solid gray;
-	margin: 0px;
+	margin: 3px;
 	padding: 5px;
+}
+
+div.deActiveDiv{
+	border: 1px solid gray;
+	background-color: white;
+}
+
+div.animatedDiv{
+	border: 1px solid gray;
 	background-color: #80ff00;
 }
 
 div.activeDiv{
-	width: 100%;
 	border: 2px solid gray;
-	margin: 3px;
-	padding: 5px;
 	box-shadow: 5px 5px 5px #888888;
-}
-
-div.deActiveDiv{
-	width: 100%;
-	border: 1px solid gray;
-	margin: 3px;
-	padding: 5px;
-	background-color: white;
 }
 
 #lineColorPicker {
