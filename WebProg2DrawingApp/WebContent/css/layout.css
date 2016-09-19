@@ -27,11 +27,6 @@ div.animatedDiv{
 	background-color: #80ff00;
 }
 
-div.activeDiv{
-	border: 2px solid gray;
-	box-shadow: 5px 5px 5px #888888;
-}
-
 #lineColorPicker {
 	background-color: white;
     background-size: 60px 40px;
@@ -150,9 +145,13 @@ header, footer {
 	padding: 2px;
 	min-width: 80px;
 	flex: 1 15%;
-	overflow: auto;
 	order: 3;
 	border-left: 1px solid gray;
+}
+
+#history {
+	overflow: auto;
+	height: 750px;
 }
 
 #middleArea>div.midArea {
