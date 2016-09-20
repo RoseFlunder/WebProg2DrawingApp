@@ -94,8 +94,6 @@ public class DrawingWebsocket {
 	private static synchronized void checkRobot(String robotURI) {
 		if (clients.size() < 3 && (robot == null || !robot.isAlive())) {
 			try {
-//				ws://localhost/WebProg2DrawingApp/websocket/drawing/Robot/
-//				ws://195.37.49.24/sos16_03/websocket/drawing/Robot/
 				robot = new DrawRobot(new URI(robotURI));
 				robot.start();
 			} catch (URISyntaxException e) {
@@ -174,7 +172,6 @@ public class DrawingWebsocket {
 						try {
 							client.getBasicRemote().sendObject(msg);
 						} catch (IOException | EncodeException e) {
-							System.err.println("shit");
 							System.err.println(e.getMessage());
 						}
 					}

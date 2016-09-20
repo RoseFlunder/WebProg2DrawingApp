@@ -37,7 +37,7 @@ public class DrawRobot extends Thread {
 	private DrawType[] drawTypes = DrawType.values();
 	private Random random = new Random();
 	private ObjectMapper mapper = new ObjectMapper();
-	private boolean run = true;
+	private volatile boolean run = true;
 	
 	public DrawRobot(URI endpointURI) {
 		try {
@@ -86,7 +86,7 @@ public class DrawRobot extends Thread {
 
 	@Override
 	public void run() {
-		while (run && session.isOpen()){
+		while (run && session != null && session.isOpen()){
 			Message msg = new Message();
 			msg.setUser("Robot");
 			msg.setType(MessageType.DRAWMESSAGE);
