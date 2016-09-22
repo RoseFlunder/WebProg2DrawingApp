@@ -148,11 +148,9 @@ function onMessage(event) {
 		redrawHistoryOnCanvas();
 		
 		break;
-		break;
 		
 	case "REGISTER_USERNAME_MESSAGE":
 		document.getElementById("username").value = msg.user;
-		nameBox.value = msg.user;
 		username = msg.user;
 		break;
 

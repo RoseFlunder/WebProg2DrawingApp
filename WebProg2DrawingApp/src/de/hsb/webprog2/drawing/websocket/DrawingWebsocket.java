@@ -96,15 +96,16 @@ public class DrawingWebsocket {
 	}
 
 	private static synchronized void checkRobot(String robotURI) {
-		if (clients.size() < 3 && (robot == null || !robot.isRobotAlive())) {
+		if (clients.size() >=1 && clients.size() < 3 && robot == null) {
 			try {
 				robot = new DrawRobot(new URI(robotURI));
 				robot.start();
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
-		} else if (robot != null && robot.isAlive() && (clients.size() > 3 || clients.size() == 1)) {
+		} else if (robot != null && (clients.size() > 3 || clients.size() <= 1)) {
 			robot.stopRobot();
+			robot = null;
 		}
 	}
 
