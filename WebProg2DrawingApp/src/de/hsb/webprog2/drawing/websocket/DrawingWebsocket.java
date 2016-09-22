@@ -96,7 +96,7 @@ public class DrawingWebsocket {
 	}
 
 	private static synchronized void checkRobot(String robotURI) {
-		if (clients.size() < 3 && (robot == null || !robot.isAlive())) {
+		if (clients.size() < 3 && (robot == null || !robot.isRobotAlive())) {
 			try {
 				robot = new DrawRobot(new URI(robotURI));
 				robot.start();

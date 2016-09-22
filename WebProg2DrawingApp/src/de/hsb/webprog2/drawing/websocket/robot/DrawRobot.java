@@ -80,6 +80,10 @@ public class DrawRobot extends Thread {
         this.session.getAsyncRemote().sendText(message);
     }
 	
+	public boolean isRobotAlive() {
+		return this.run;
+	}
+	
 	public void stopRobot(){
 		this.run = false;
 	}

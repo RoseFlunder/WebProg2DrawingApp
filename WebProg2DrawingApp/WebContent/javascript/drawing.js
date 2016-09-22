@@ -1,5 +1,6 @@
 var webSocket, tools, tool, canvas, ctx, previewCanvas, previewCtx, animator, drawHistory = new Map();
 var selectedHistoryElement;
+var username;
 
 function init() {
 	animator = new animator();
@@ -150,8 +151,9 @@ function onMessage(event) {
 		break;
 		
 	case "REGISTER_USERNAME_MESSAGE":
-		var nameBox = document.getElementById("username");
+		document.getElementById("username").value = msg.user;
 		nameBox.value = msg.user;
+		username = msg.user;
 		break;
 
 	default:
@@ -216,7 +218,7 @@ function convertMillisToFormattedTime(millis){
 function animateSelected(){
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
-	if(document.getElementById("username").value == msg.user){
+	if(username == msg.user){
 		drawMsg.animate = true;
 		tools[drawMsg.type].setAnimationParams(drawMsg);
 		animator.addElement(msg);
@@ -240,23 +242,14 @@ function clickOnDiv(element){
 	element.classList.add("activeDiv");
 	
 	var msg = drawHistory.get(element.getAttribute("id"));
-	document.getElementById("animate_selected").disabled = (document.getElementById("username").value != msg.user);
-	document.getElementById("stop_animate_selected").disabled = (document.getElementById("username").value != msg.user);
+	document.getElementById("animate_selected").disabled = (username != msg.user);
+	document.getElementById("stop_animate_selected").disabled = (username != msg.user);
 	
 	selectedHistoryElement = element;
 }
 
 function deleteSelected(mode){
 	var selectedId = selectedHistoryElement.getAttribute("id");	
-	
-//	var msg = {
-//		user : document.getElementById("username").value,
-//		type : "DELETE_REQUEST_MESSAGE",
-//		content : {
-//			drawMessageId : selectedId,
-//			mode : mode
-//		}
-//	}
 	
 	var idsToDelete = [];
 	var found = false;
@@ -292,7 +285,7 @@ function deleteSelected(mode){
 	}
 	
 	var msg = {
-		user : document.getElementById("username").value,
+		user : username,
 		type : "DELETE_MESSAGE",
 		content : {
 			idsToDelete : idsToDelete
@@ -344,7 +337,7 @@ function sendDrawMessage(content){
 	}
 
 	var msg = {
-		user : document.getElementById("username").value,
+		user : username,
 		type : "DRAWMESSAGE",
 
 		content : content
@@ -800,10 +793,9 @@ function polygonTool() {
 
 function send() {
 	var textBox = document.getElementById("usermsg");
-	var nameBox = document.getElementById("username");
 	
 	var msg = {
-		user : nameBox.value,
+		user : username,
 		type : "CHATMESSAGE",
 
 		content : {
