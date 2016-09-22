@@ -6,7 +6,6 @@ function init() {
 	var person = prompt("Please enter your name", "User");
 		
 	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing/" + person;
-	console.log(uri);
 	
 	webSocket = new WebSocket(uri);
 	webSocket.onerror = onError;
@@ -37,19 +36,13 @@ function init() {
 	previewCanvas.addEventListener('mouseup', ev_canvas, false);
 	
 	canvasArea.onkeydown = function(ev){
-		console.log("key down event");
-		console.log(tools['POLYGON'].keypressed);
 		if(ev.ctrlKey && !tools['POLYGON'].keypressed){
-			// console.log("keydown ctrl");
 			tools['POLYGON'].keypressed = true;
 		}
 	}
 
 	canvasArea.onkeyup = function(ev){
-		console.log("key up event");
-		console.log(tools['POLYGON'].keypressed);
 		if(ev.keyCode == 17 && tools['POLYGON'].keypressed){
-			// console.log("keyup ctrl");
 			tools['POLYGON'].keypressed = false;
 			tools['POLYGON'].endPolygon();
 		}
@@ -142,6 +135,20 @@ function onMessage(event) {
 		
 		break;
 		
+	case "DELETE_MESSAGE":
+		// remove ids to delete from history object
+		for (var id of msg.content.idsToDelete) {
+			animator.removeElement(drawHistory.get(id));
+			drawHistory.delete(id);
+			document.getElementById("history").removeChild(document.getElementById(id));
+		}
+		
+		// refresh canvas
+		redrawHistoryOnCanvas();
+		
+		break;
+		break;
+		
 	case "REGISTER_USERNAME_MESSAGE":
 		var nameBox = document.getElementById("username");
 		nameBox.value = msg.user;
@@ -184,8 +191,6 @@ function animator(){
 	
 	this.animate = function(){
 		if (this.elementsToAnimate.size > 0){
-			console.log("redraw");
-			
 			for (var [key, value] of this.elementsToAnimate) {
 				tools[value.content.type].onAnimate(value.content);
 				webSocket.send(JSON.stringify(value));
@@ -209,7 +214,6 @@ function convertMillisToFormattedTime(millis){
 }
 
 function animateSelected(){
-	// TODO: check if selected is own element
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
 	if(document.getElementById("username").value == msg.user){
@@ -220,7 +224,6 @@ function animateSelected(){
 }
 
 function stopAnimateSelected(){
-	// TODO: check if selected is own element
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	msg.content.animate = false;	
 	animator.removeElement(msg);
@@ -246,16 +249,55 @@ function clickOnDiv(element){
 function deleteSelected(mode){
 	var selectedId = selectedHistoryElement.getAttribute("id");	
 	
+//	var msg = {
+//		user : document.getElementById("username").value,
+//		type : "DELETE_REQUEST_MESSAGE",
+//		content : {
+//			drawMessageId : selectedId,
+//			mode : mode
+//		}
+//	}
+	
+	var idsToDelete = [];
+	var found = false;
+	
+	switch (mode) {
+	case "SINGLE":
+		idsToDelete.push(selectedId);
+		animator.removeElement(selectedId);
+		break;
+		
+	case "ALL_BEFORE":
+		for (var [key, value] of drawHistory) {
+			if (selectedId == key)
+				break;
+			idsToDelete.push(key);
+			animator.removeElement(value);
+		}
+		break;
+		
+	case "ALL_AFTER":
+		for (var [key, value] of drawHistory) {
+			if (selectedId == key)
+				found = true;
+			if (!found)
+				continue;
+			idsToDelete.push(key);
+			animator.removeElement(value);
+		}
+		break;
+
+	default:
+		break;
+	}
+	
 	var msg = {
 		user : document.getElementById("username").value,
-		type : "DELETE_REQUEST_MESSAGE",
+		type : "DELETE_MESSAGE",
 		content : {
-			drawMessageId : selectedId,
-			mode : mode
+			idsToDelete : idsToDelete
 		}
 	}
-		
-	console.log("Sending delete message:");
 	
 	webSocket.send(JSON.stringify(msg));
 }

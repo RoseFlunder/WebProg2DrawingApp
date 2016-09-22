@@ -26,6 +26,7 @@ import javax.websocket.server.PathParam;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import de.hsb.webprog2.drawing.model.ChatMessage;
+import de.hsb.webprog2.drawing.model.DeleteMessage;
 import de.hsb.webprog2.drawing.model.DeleteRequestMessage;
 import de.hsb.webprog2.drawing.model.DeleteResponseMessage;
 import de.hsb.webprog2.drawing.model.Message;
@@ -53,21 +54,24 @@ public class DrawingWebsocket {
 		drawingService = (DrawingService) config.getUserProperties().get(DrawingService.class.getName());
 		robotUri = config.getUserProperties().get("websocket_url_robot").toString();
 		
-		if (clients.containsKey(userName)){
-			int i = 1;
-			while (clients.containsKey(userName + i)) {
-				++i;
+		synchronized (clients) {
+			if (clients.containsKey(userName)){
+				int i = 1;
+				while (clients.containsKey(userName + i)) {
+					++i;
+				}
+				userName += i;
 			}
-			userName += i;
-		}
-		clients.put(userName, session);
-		Message msg = new Message();
-		msg.setType(MessageType.REGISTER_USERNAME_MESSAGE);
-		msg.setUser(userName);
-		try {
-			session.getBasicRemote().sendObject(msg);
-		} catch (IOException | EncodeException e1) {
-			System.err.println(e1.getMessage());
+			clients.put(userName, session);
+			
+			Message msg = new Message();
+			msg.setType(MessageType.REGISTER_USERNAME_MESSAGE);
+			msg.setUser(userName);
+			try {
+				session.getBasicRemote().sendObject(msg);
+			} catch (IOException | EncodeException e) {
+				System.err.println(e.getMessage());
+			}
 		}
 		
 		Deque<Message> history = drawingService.getHistory();
@@ -141,7 +145,8 @@ public class DrawingWebsocket {
 				msg.setId(UUID.randomUUID().toString());
 				drawingService.addDrawingMessageToHistory(msg);
 			} else {
-				drawingService.replaceDrawingMessageInHistory(msg);
+				if (!drawingService.replaceDrawingMessageInHistory(msg))
+					return;
 			}
 			break;
 		case DELETE_REQUEST_MESSAGE:
@@ -153,10 +158,20 @@ public class DrawingWebsocket {
 				response.setDeletedIds(deletedIds);
 				msg.setType(MessageType.DELETE_RESPONSE_MESSAGE);
 				msg.setContent(mapper.valueToTree(response));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			break;
+			
+		case DELETE_MESSAGE:
+			try {
+				DeleteMessage deleteMsg = mapper.readValue(msg.getContent(), DeleteMessage.class);
+				drawingService.removeFromHistory(deleteMsg.getIdsToDelete());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-
+			
 			break;
 			
 			

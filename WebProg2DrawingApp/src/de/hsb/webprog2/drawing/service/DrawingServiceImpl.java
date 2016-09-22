@@ -13,23 +13,22 @@ import de.hsb.webprog2.drawing.model.Message;
 public class DrawingServiceImpl implements DrawingService {
 
 	private Deque<Message> history = new LinkedBlockingDeque<>();
-	
+
 	@Override
-	public void addDrawingMessageToHistory(Message msg) {
+	public synchronized void addDrawingMessageToHistory(Message msg) {
 		history.addLast(msg);
 	}
-	
+
 	@Override
-	public void replaceDrawingMessageInHistory(Message msg) {
-		synchronized (history) {
-			for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
-				Message message = iterator.next();
-				if (msg.getId().equals(message.getId())){
-					message.setContent(msg.getContent());
-					break;
-				}
+	public synchronized boolean replaceDrawingMessageInHistory(Message msg) {
+		for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
+			Message message = iterator.next();
+			if (msg.getId().equals(message.getId())) {
+				message.setContent(msg.getContent());
+				return true;
 			}
-		}		
+		}
+		return false;
 	}
 
 	@Override
@@ -38,43 +37,44 @@ public class DrawingServiceImpl implements DrawingService {
 	}
 
 	@Override
-	public Set<String> removeFromHistory(String id, DeleteMode mode) {
+	public synchronized Set<String> removeFromHistory(String id, DeleteMode mode) {
 		Set<String> deletedIds = new HashSet<>();
-		
-		synchronized (history) {
-			switch (mode) {
-			case SINGLE:
-				if (history.removeIf(element -> id.equals(element.getId())))
-					deletedIds.add(id);
-				break;
-				
-			case ALL_BEFORE:
-				for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
-					Message message = iterator.next();
-					if (message.getId().equals(id))
-						break;
-					deletedIds.add(message.getId());
-					iterator.remove();
-				}
-				break;
-			
-			case ALL_AFTER:
-				for (Iterator<Message> iterator = history.descendingIterator(); iterator.hasNext();) {
-					Message message = iterator.next();
-					if (message.getId().equals(id))
-						break;
-					deletedIds.add(message.getId());
-					iterator.remove();
-				}
-				break;
 
-			default:
-				break;
+		switch (mode) {
+		case SINGLE:
+			if (history.removeIf(element -> id.equals(element.getId())))
+				deletedIds.add(id);
+			break;
+
+		case ALL_BEFORE:
+			for (Iterator<Message> iterator = history.iterator(); iterator.hasNext();) {
+				Message message = iterator.next();
+				if (message.getId().equals(id))
+					break;
+				deletedIds.add(message.getId());
+				iterator.remove();
 			}
+			break;
+
+		case ALL_AFTER:
+			for (Iterator<Message> iterator = history.descendingIterator(); iterator.hasNext();) {
+				Message message = iterator.next();
+				if (message.getId().equals(id))
+					break;
+				deletedIds.add(message.getId());
+				iterator.remove();
+			}
+			break;
+
+		default:
+			break;
 		}
-		
+
 		return deletedIds;
 	}
 
-
+	@Override
+	public synchronized void removeFromHistory(Set<String> idsToDelete) {
+		history.removeIf(m -> idsToDelete.contains(m.getId()));
+	}
 }
