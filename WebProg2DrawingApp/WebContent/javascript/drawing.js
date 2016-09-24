@@ -4,7 +4,11 @@ var username;
 
 function init() {
 	animator = new animator();
-	var person = prompt("Please enter your name", "User");
+	var person;
+	do {
+		person = prompt("Please enter your name");
+	} while (!person);
+	console.log(person);
 		
 	var uri = "ws://" + window.location.host + window.location.pathname + "websocket/drawing/" + person;
 	

@@ -8,9 +8,8 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Deque;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -41,7 +40,7 @@ import de.hsb.webprog2.drawing.websocket.robot.DrawRobot;
  */
 public class DrawingWebsocket {
 
-	private static Map<String, Session> clients = Collections.synchronizedMap(new HashMap<>());
+	private static Set<Session> clients = Collections.synchronizedSet(new HashSet<>());
 
 	private DrawingService drawingService;
 	private ObjectMapper mapper = new ObjectMapper();
@@ -53,17 +52,9 @@ public class DrawingWebsocket {
 	public void open(Session session, EndpointConfig config, @PathParam("username") String userName) {
 		drawingService = (DrawingService) config.getUserProperties().get(DrawingService.class.getName());
 		robotUri = config.getUserProperties().get("websocket_url_robot").toString();
+		clients.add(session);
 		
-		synchronized (clients) {
-			if (clients.containsKey(userName)){
-				int i = 1;
-				while (clients.containsKey(userName + i)) {
-					++i;
-				}
-				userName += i;
-			}
-			clients.put(userName, session);
-			
+		synchronized (session) {
 			Message msg = new Message();
 			msg.setType(MessageType.REGISTER_USERNAME_MESSAGE);
 			msg.setUser(userName);
@@ -91,7 +82,7 @@ public class DrawingWebsocket {
 	@OnClose
 	public void close(Session session, @PathParam("username") String userName) {
 		System.out.println("Session closed");
-		clients.remove(userName);
+		clients.remove(session);
 		checkRobot(robotUri);
 	}
 
@@ -127,8 +118,11 @@ public class DrawingWebsocket {
 			chatMsg.setMessage(t.getMessage() + "\n" + stringWriter.toString());
 			msg.setContent(mapper.valueToTree(chatMsg));
 			
-			if (session.getBasicRemote() != null && session.isOpen())
+			if (session.getBasicRemote() != null && session.isOpen()){
 				session.getBasicRemote().sendObject(msg);
+				session.close();
+			}
+				
 		} catch (IOException | EncodeException e) {
 			e.printStackTrace();
 		}
@@ -181,7 +175,7 @@ public class DrawingWebsocket {
 		}
 
 		synchronized (clients) {
-			for (Iterator<Session> iterator = clients.values().iterator(); iterator.hasNext();) {
+			for (Iterator<Session> iterator = clients.iterator(); iterator.hasNext();) {
 				Session client = iterator.next();
 				synchronized (client) {
 					if (client.isOpen()) {
