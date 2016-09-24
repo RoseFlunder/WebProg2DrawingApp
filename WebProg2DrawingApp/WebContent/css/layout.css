@@ -11,8 +11,18 @@ button {
     vertical-align: top;
 }
 
-#history>div{
-	width: 100%;
+#history {
+	overflow: auto;
+	width: 97%;
+	height: 727px;
+	margin: 3px;
+	padding: 5px;
+}
+
+#historyButtons{
+	overflow: auto;
+	width: 97%;
+	height: 45px;
 	margin: 3px;
 	padding: 5px;
 }
@@ -55,6 +65,7 @@ div.activeDiv{
 
 #animate_selected:DISABLED {
 	background-image: url( '../images/play_disabled.png' );
+	cursor: not-allowed;
 }
 
 #stop_animate_selected {
@@ -67,6 +78,7 @@ div.activeDiv{
 
 #stop_animate_selected:DISABLED {
 	background-image: url( '../images/stop_disabled.png' );
+	cursor: not-allowed;
 }
 
 
@@ -119,6 +131,20 @@ div.activeDiv{
     width: 64px;
 }
 
+#saveHistory {
+    background-image: url( '../images/save_history.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
+#imageSaveBtn {
+    background-image: url( '../images/save_picture.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
 header, footer {
 	padding: 1em;
 	color: white;
@@ -149,14 +175,10 @@ header, footer {
 	margin: 0px;
 	padding: 2px;
 	min-width: 80px;
+	max-height: 800px;
 	flex: 1 15%;
 	order: 3;
 	border-left: 1px solid gray;
-}
-
-#history {
-	overflow: auto;
-	height: 750px;
 }
 
 #middleArea>div.midArea {
