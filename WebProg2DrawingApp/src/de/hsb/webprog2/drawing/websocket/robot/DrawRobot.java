@@ -69,6 +69,7 @@ public class DrawRobot extends Thread {
 	public void onError(Session session, Throwable t){
 		System.out.println("Error at robot");
 		try {
+			run = false;
 			if (session.isOpen())
 				session.close();
 		} catch (IOException e) {
