@@ -30,16 +30,19 @@ button {
 div.deActiveDiv{
 	border: 1px solid gray;
 	background-color: white;
+	margin: 5px;
 }
 
 div.animatedDiv{
 	border: 1px solid gray;
 	background-color: #80ff00;
+	margin: 5px;
 }
 
 div.activeDiv{
 	border: 2px solid gray;
 	box-shadow: 5px 5px 5px #888888;
+	margin: 5px;
 }
 
 #lineColorPicker {
