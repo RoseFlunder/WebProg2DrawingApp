@@ -143,6 +143,33 @@ public class DrawRobot extends Thread {
 				polyMsg.setyPoints(ypoints);
 				drawContent = mapper.valueToTree(polyMsg);
 				break;
+			
+			case FREESTYLE:
+				DrawPolygonMessage freeMsg = new DrawPolygonMessage();
+				points = 50 + random.nextInt(100);
+				xpoints = new int[points];
+				ypoints = new int[points];
+				xpoints[0] = random.nextInt(WIDTH);
+				ypoints[0] = random.nextInt(HEIGHT);
+				for (int i = 1; i < points; i++) {
+					int changeX = random.nextBoolean() ? -random.nextInt(15) : random.nextInt(15);
+					int changeY = random.nextBoolean() ? -random.nextInt(15) : random.nextInt(15);
+					
+					int nextX = xpoints[i-1] + changeX;
+					if (nextX > WIDTH || nextX < 0)
+						nextX = xpoints[i-1] - changeX;
+					
+					int nextY = ypoints[i-1] + changeY;
+					if (nextY > WIDTH || nextY < 0)
+						nextY = ypoints[i-1] - changeY;
+					
+					xpoints[i] = nextX;
+					ypoints[i] = nextY;					
+				}
+				freeMsg.setxPoints(xpoints);
+				freeMsg.setyPoints(ypoints);
+				drawContent = mapper.valueToTree(freeMsg);
+				break;
 
 			default:
 				break;
