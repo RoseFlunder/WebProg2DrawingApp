@@ -154,6 +154,7 @@ public class DrawRobot extends Thread {
 			if (random.nextBoolean()) {
 				Color fillColor = new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
 				drawMsg.setFillColor(fillColor.getRGB());
+				drawMsg.setUseFillColor(true);
 			}
 			
 			drawMsg.setContent(drawContent);
