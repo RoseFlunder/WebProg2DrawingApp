@@ -148,6 +148,14 @@ public class DrawRobot extends Thread {
 				break;
 			}
 			
+			Color lineColor = new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+			drawMsg.setLineColor(lineColor.getRGB());
+			
+			if (random.nextBoolean()) {
+				Color fillColor = new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+				drawMsg.setFillColor(fillColor.getRGB());
+			}
+			
 			drawMsg.setContent(drawContent);
 			msg.setContent(mapper.valueToTree(drawMsg));
 			try {
