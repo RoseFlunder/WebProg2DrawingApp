@@ -32,6 +32,7 @@ function init() {
 	previewCanvas.id = 'previewCanvas';
 	previewCanvas.width = canvas.width;
 	previewCanvas.height = canvas.height;
+	previewCanvas.tabIndex = 1000;
 	container.appendChild(previewCanvas, canvas);
 
 	previewCtx = previewCanvas.getContext('2d');
@@ -52,11 +53,6 @@ function init() {
 			tools['POLYGON'].endPolygon();
 		}
 	}
-	
-	previewCanvas.tabIndex = 1000;
-	
-	document.addEventListener('onkeydown', ev_canvas, false);
-	document.addEventListener('onkeyup', ev_canvas, false);
 
 	tools = {
 		LINE : new lineTool(),
@@ -208,16 +204,6 @@ function animator(){
 	};
 }
 
-function convertMillisToFormattedTimestamp(millis){
-	var d = new Date(millis);
-	return d.toLocaleDateString() + " " + d.toLocaleTimeString();
-}
-
-function convertMillisToFormattedTime(millis){
-	var d = new Date(millis);
-	return d.toLocaleTimeString();
-}
-
 function animateSelected(){
 	var msg = drawHistory.get(selectedHistoryElement.getAttribute("id"));
 	var drawMsg = msg.content;
@@ -233,6 +219,25 @@ function stopAnimateSelected(){
 	msg.content.animate = false;	
 	animator.removeElement(msg);
 	webSocket.send(JSON.stringify(msg));
+}
+
+function convertMillisToFormattedTimestamp(millis){
+	var d = new Date(millis);
+	return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+}
+
+function convertMillisToFormattedTime(millis){
+	var d = new Date(millis);
+	return d.toLocaleTimeString();
+}
+
+function getColorFromRGBA(color){
+	var alpha = (color >> 24) & 0xFF;
+	var red = (color >> 16) & 0xFF;
+	var green = (color >> 8) & 0xFF;
+	var blue = (color >> 0) & 0xFF;
+	
+	return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
 }
 
 function clickOnDiv(element){
@@ -316,15 +321,6 @@ function ev_canvas(ev) {
 	if (func) {
 		func(ev);
 	}
-}
-
-function getColorFromRGBA(color){
-	var alpha = (color >> 24) & 0xFF;
-	var red = (color >> 16) & 0xFF;
-	var green = (color >> 8) & 0xFF;
-	var blue = (color >> 0) & 0xFF;
-	
-	return 'rgba(' + red + ',' + green + ',' + blue + ',' + alpha + ')';
 }
 
 function sendDrawMessage(content){
@@ -653,11 +649,11 @@ function circleTool() {
 			content.x += content.vx;
 			content.y += content.vy;
 			
-			if (content.x + content.radius > canvas.width || content.x < 0){
+			if (content.x > canvas.width || content.x < 0){
 				content.vx = -content.vx;
 			}
 			
-			if (content.y + content.radius > canvas.height || content.y < 0){
+			if (content.y > canvas.height || content.y < 0){
 				content.vy = -content.vy;
 			}
 			
