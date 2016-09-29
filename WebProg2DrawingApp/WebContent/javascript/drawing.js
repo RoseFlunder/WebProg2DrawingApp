@@ -62,7 +62,8 @@ function init() {
 		LINE : new lineTool(),
 		CIRCLE : new circleTool(),
 		RECTANGLE : new rectangleTool(),
-		POLYGON : new polygonTool()
+		POLYGON : new polygonTool(),
+		FREESTYLE: new freestyleTool()
 	};
 
 	tool = tools["LINE"];
@@ -666,6 +667,117 @@ function circleTool() {
 				content.radius += content.vRadius;
 			else
 				content.vRadius = -content.vRadius;
+		}
+	}
+}
+
+function freestyleTool() {
+	var tool = this;
+	var started = false;
+
+	var x = [], y = [];
+	var x2, y2;
+	
+	this.keypressed = false;
+	
+	this.getHistoryDescription = function(msgContent){
+		return "points: " + msgContent.xPoints.length;
+	};
+	
+	this.mousedown = function(ev) {
+		x.push(ev._x);
+		y.push(ev._y);
+		tool.started = true;
+	};
+
+	this.mousemove = function(ev) {
+		if (tool.started) {
+			x.push(ev._x);
+			y.push(ev._y);
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			previewCtx.beginPath();
+			previewCtx.moveTo(x[0], y[0]);
+			
+			if(x.length > 1){
+				for(var i = 0; i < x.length; ++i){
+					previewCtx.lineTo(x[i], y[i]);
+				}
+			}
+			previewCtx.stroke();
+		}
+	};
+
+	this.mouseup = function(ev) {
+		if (tool.started) {
+			x.push(ev._x);
+			y.push(ev._y);
+			tool.started = false;
+			previewCtx.clearRect(0, 0, previewCanvas.width,
+					previewCanvas.height);
+			
+			var content = {
+				type : "FREESTYLE",
+				content : {
+					xPoints : x,
+					yPoints : y
+				}
+			}
+			sendDrawMessage(content);
+			
+			x = [];
+			y = [];
+		}
+	};
+
+	this.draw = function(drawMessage) {
+		content = drawMessage.content;
+		
+		ctx.strokeStyle = getColorFromRGBA(drawMessage.lineColor);
+		ctx.beginPath();
+		ctx.moveTo(content.xPoints[0], content.yPoints[0]);
+		if(content.xPoints.length > 1){
+			for(var i = 1; i < content.xPoints.length; ++i){
+				ctx.lineTo(content.xPoints[i], content.yPoints[i]);
+			}
+		}
+		
+		var oldFillStyle = ctx.fillStyle;
+		if (drawMessage.fillColor){
+			ctx.closePath();
+			ctx.fillStyle = getColorFromRGBA(drawMessage.fillColor);
+			ctx.fill();
+		}
+		ctx.fillStyle = oldFillStyle;
+		
+		ctx.stroke();
+	}
+	
+	this.setAnimationParams = function (drawMessage){
+		content = drawMessage.content;
+		
+		content.vx = [];
+		content.vy = [];
+		
+		for (var i = 0; i < content.xPoints.length; ++i){
+			content.vx.push(parseInt(Math.random() * 5) + 1);
+			content.vy.push(parseInt(Math.random() * 5) + 1);
+		}
+	}
+	
+	this.onAnimate = function(drawMessage){
+		if (drawMessage.animate){
+			content = drawMessage.content;
+			
+			for (var i = 0; i < content.xPoints.length; ++i){
+				if (content.xPoints[i] + content.vx[i] > canvas.width || content.xPoints[i] + content.vx[i] < 0)
+					content.vx[i] = -content.vx[i];
+				if (content.yPoints[i] + content.vy[i] > canvas.height || content.yPoints[i] + content.vy[i] < 0)
+					content.vy[i] = -content.vy[i];
+				content.xPoints[i] = content.xPoints[i] + content.vx[i];
+				content.yPoints[i] = content.yPoints[i] + content.vy[i];
+			}
 		}
 	}
 }

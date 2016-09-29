@@ -5,6 +5,7 @@ public enum DrawType {
 	LINE,
 	CIRCLE,
 	RECTANGLE,
-	POLYGON;
+	POLYGON,
+	FREESTYLE;
 
 }

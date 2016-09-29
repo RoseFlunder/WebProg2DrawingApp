@@ -141,6 +141,13 @@ div.activeDiv{
     width: 64px;
 }
 
+#freestyleTool {
+    background-image: url( '../images/freestyle.png' );
+    background-size: 60px 40px;
+    height: 44px;  
+    width: 64px;
+}
+
 #imageSaveBtn {
     background-image: url( '../images/save_picture.png' );
     background-size: 60px 40px;

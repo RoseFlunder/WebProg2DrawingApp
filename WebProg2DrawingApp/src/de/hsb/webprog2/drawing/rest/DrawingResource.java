@@ -105,6 +105,20 @@ public class DrawingResource {
 					graphics.setColor(new Color(drawMsg.getLineColor()));
 					graphics.drawPolygon(polyMsg.getxPoints(), polyMsg.getyPoints(), polyMsg.getxPoints().length);
 					break;
+				case FREESTYLE:
+					DrawPolygonMessage freeMsg = mapper.readValue(drawMsg.getContent(), DrawPolygonMessage.class);
+					
+					if (drawMsg.isUseFillColor()) {
+						graphics.setColor(new Color(drawMsg.getFillColor()));
+						graphics.fillPolygon(freeMsg.getxPoints(), freeMsg.getyPoints(), freeMsg.getxPoints().length);
+						graphics.setColor(new Color(drawMsg.getLineColor()));
+						graphics.drawPolygon(freeMsg.getxPoints(), freeMsg.getyPoints(), freeMsg.getxPoints().length);
+					}
+					else{
+						graphics.setColor(new Color(drawMsg.getLineColor()));
+						graphics.drawPolyline(freeMsg.getxPoints(), freeMsg.getyPoints(), freeMsg.getxPoints().length);
+					}
+					break;
 				default:
 					break;
 				}
